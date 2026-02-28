@@ -2514,8 +2514,8 @@ Kepribadian kamu: ramah, helpful, cerdas, dan sedikit santai tapi tetap profesio
 
         // ══ SEND ══
         // Batasi URL biar ga 502 — max 6 pesan terakhir, system prompt dicompress
-        const MAX_HISTORY_TURNS = 6; // ambil N pesan terakhir (user+ai = 1 turn = 2 item)
-        const MAX_URL_CHARS = 2800;  // batas aman URL setelah encode
+        const MAX_HISTORY_TURNS = 4; // ambil N pesan terakhir (user+ai = 1 turn = 2 item)
+        const MAX_URL_CHARS = 1800;  // batas aman URL setelah encode
 
         function buildPrompt(userMsg) {
             const styleMap = {
@@ -2534,18 +2534,18 @@ Kepribadian kamu: ramah, helpful, cerdas, dan sedikit santai tapi tetap profesio
             const chat = chats[activeChatId];
             const recentMsgs = chat.messages.slice(-MAX_HISTORY_TURNS);
             const historyStr = recentMsgs.map(m =>
-                (m.role === 'user' ? 'User: ' : 'YAREUU AI: ') + m.text.slice(0, 300) // truncate tiap pesan juga
+                (m.role === 'user' ? 'User: ' : ' ') + m.text.slice(0, 150) // truncate tiap pesan juga
             ).join('\n');
 
             const feedbackNote = chat._feedbackNote || '';
             const fullPrompt = sysPrompt + feedbackNote + '\n\n' + historyStr + '\nUser: ' + userMsg + '\nYAREUU AI:';
 
             // Safety check panjang URL
-            if (encodeURIComponent(fullPrompt).length > MAX_URL_CHARS * 3) {
+            if (encodeURIComponent(fullPrompt).length > MAX_URL_CHARS) {
                 // Kalau masih kegedean, pakai history lebih sedikit
                 const minMsgs = chat.messages.slice(-2);
                 const minHistory = minMsgs.map(m =>
-                    (m.role === 'user' ? 'User: ' : 'YAREUU AI: ') + m.text.slice(0, 150)
+                    (m.role === 'user' ? 'User: ' : 'YAREUU AI: ') + m.text.slice(0, 100)
                 ).join('\n');
                 return sysPrompt + '\n\n' + minHistory + '\nUser: ' + userMsg + '\nYAREUU AI:';
             }
@@ -3158,8 +3158,8 @@ main().catch(err=>{console.error(err);process.exit(1);});`;
 
             try {
                 // Build prompt
-                const recent = termHistory.slice(-8);
-                const hist = recent.map(m => (m.role === 'user' ? 'User: ' : 'YAREUU AI: ') + m.text.slice(0, 300)).join('\n');
+                const recent = termHistory.slice(-4);
+                const hist = recent.map(m => (m.role === 'user' ? 'User: ' : 'YAREUU AI: ') + m.text.slice(0, 150)).join('\n');
                 const prompt = SYS_PROMPT_CLI + '\n\n' + hist + '\nUser: ' + msg + '\nYAREUU AI: ';
                 const d = await tryFetch(prompt, 30000);
 

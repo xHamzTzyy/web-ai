@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YAREUU AI — Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0b0e;
+  --surface: #111318;
+  --surface2: #181c23;
+  --surface3: #1e2330;
+  --border: #252b38;
+  --accent: #7c6af7;
+  --accent2: #a78bfa;
+  --accent-soft: rgba(124,106,247,0.1);
+  --text: #e8eaf0;
+  --text-muted: #6b7280;
+  --text-dim: #9ca3af;
+  --green: #34d399;
+  --red: #f87171;
+  --yellow: #fbbf24;
+  --orange: #f97316;
+  --radius: 12px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Sora', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── LOGIN ── */
+#loginScreen {
+  position: fixed; inset: 0;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 100;
+  flex-direction: column; gap: 0;
+}
+#loginScreen.hide { display: none; }
+.login-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 40px 36px;
+  width: min(400px, 92vw);
+  text-align: center;
+}
+.login-logo {
+  width: 64px; height: 64px;
+  background: linear-gradient(135deg,#f97316,#fbbf24);
+  border-radius: 18px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px; color: white; margin: 0 auto 20px;
+  box-shadow: 0 0 40px rgba(249,115,22,0.3);
+}
+.login-card h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+.login-card p { font-size: 13px; color: var(--text-muted); margin-bottom: 28px; }
+.login-input {
+  width: 100%; background: var(--surface2);
+  border: 1px solid var(--border); border-radius: 10px;
+  color: var(--text); font-family: 'Sora', sans-serif;
+  font-size: 14px; padding: 12px 14px;
+  outline: none; transition: border-color .2s; margin-bottom: 12px;
+}
+.login-input:focus { border-color: var(--orange); }
+.login-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #f97316, #fbbf24);
+  border: none; color: white;
+  font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600;
+  padding: 13px; border-radius: 10px; cursor: pointer;
+  transition: opacity .2s, transform .2s;
+}
+.login-btn:hover { opacity: .9; transform: translateY(-1px); }
+.login-err { color: var(--red); font-size: 12px; margin-top: 8px; display: none; }
+
+/* ── LAYOUT ── */
+#app { display: flex; flex: 1; overflow: hidden; }
+#app.hide { display: none; }
+
+/* ── SIDEBAR ── */
+#sidebar {
+  width: 260px; flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  overflow: hidden; min-height: 0;
+}
+.sidebar-head {
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+.admin-logo {
+  width: 34px; height: 34px; border-radius: 10px;
+  background: linear-gradient(135deg,#f97316,#fbbf24);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; color: white; flex-shrink: 0;
+}
+.sidebar-brand { flex: 1; }
+.sidebar-brand .brand-name { font-size: 13.5px; font-weight: 700; }
+.sidebar-brand .brand-sub { font-size: 10.5px; color: var(--orange); margin-top: 1px; }
+
+.stat-cards {
+  padding: 12px;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 8px; flex-shrink: 0;
+}
+.stat-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px 12px;
+}
+.stat-card .stat-label { font-size: 10px; color: var(--text-muted); margin-bottom: 4px; }
+.stat-card .stat-val { font-size: 20px; font-weight: 700; }
+.stat-card.online .stat-val { color: var(--green); }
+.stat-card.total .stat-val { color: var(--accent2); }
+.stat-card.msgs .stat-val { color: var(--yellow); }
+.stat-card.today .stat-val { color: var(--orange); }
+
+.user-list-head {
+  padding: 8px 12px 4px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.user-list-head span { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .8px; }
+.refresh-btn {
+  background: none; border: none; color: var(--text-muted);
+  cursor: pointer; font-size: 12px; padding: 3px 6px;
+  border-radius: 6px; transition: color .2s;
+}
+.refresh-btn:hover { color: var(--text); }
+
+.search-box {
+  margin: 0 10px 6px; position: relative;
+}
+.search-box input {
+  width: 100%; background: var(--surface2);
+  border: 1px solid var(--border); border-radius: 8px;
+  color: var(--text); font-family: 'Sora', sans-serif;
+  font-size: 12px; padding: 7px 10px 7px 30px;
+  outline: none; transition: border-color .2s;
+}
+.search-box input:focus { border-color: var(--orange); }
+.search-box input::placeholder { color: var(--text-muted); }
+.search-box i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 11px; }
+
+.user-list { flex: 1; overflow-y: auto; padding: 0 8px 8px; }
+.user-list::-webkit-scrollbar { width: 3px; }
+.user-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+.user-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 9px 10px; border-radius: 9px;
+  cursor: pointer; transition: background .15s;
+  position: relative;
+}
+.user-item:hover { background: var(--surface2); }
+.user-item.active { background: rgba(249,115,22,0.12); border: 1px solid rgba(249,115,22,0.3); }
+.user-avatar-wrap { position: relative; flex-shrink: 0; }
+.user-avatar {
+  width: 34px; height: 34px; border-radius: 10px;
+  background: linear-gradient(135deg,#7c6af7,#a78bfa);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700; color: white;
+}
+.presence-dot {
+  position: absolute; bottom: -1px; right: -1px;
+  width: 9px; height: 9px; border-radius: 50%;
+  border: 1.5px solid var(--surface);
+  background: var(--text-muted);
+}
+.presence-dot.online { background: var(--green); box-shadow: 0 0 6px rgba(52,211,153,0.6); animation: blink 2s infinite; }
+@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:.4;} }
+
+.user-info-col { flex: 1; min-width: 0; }
+.user-name { font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.user-meta { font-size: 10.5px; color: var(--text-muted); margin-top: 1px; }
+.user-badge {
+  font-size: 9px; padding: 2px 6px; border-radius: 10px;
+  font-weight: 600; flex-shrink: 0;
+}
+.user-badge.online { background: rgba(52,211,153,.15); color: var(--green); border: 1px solid rgba(52,211,153,.3); }
+.user-badge.offline { background: var(--surface3); color: var(--text-muted); border: 1px solid var(--border); }
+
+.sidebar-footer {
+  border-top: 1px solid var(--border);
+  padding: 10px 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.admin-label { flex: 1; }
+.admin-label .name { font-size: 12.5px; font-weight: 600; color: var(--orange); }
+.admin-label .role { font-size: 10px; color: var(--text-muted); }
+.logout-btn {
+  background: none; border: 1px solid var(--border);
+  color: var(--text-muted); font-size: 12px; padding: 5px 10px;
+  border-radius: 7px; cursor: pointer; transition: all .2s;
+  font-family: 'Sora', sans-serif;
+}
+.logout-btn:hover { border-color: var(--red); color: var(--red); }
+
+/* ── MAIN ── */
+#main {
+  flex: 1; display: flex; flex-direction: column;
+  overflow: hidden; min-width: 0;
+}
+
+/* Header */
+.main-header {
+  padding: 13px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  display: flex; align-items: center; gap: 12px;
+  flex-shrink: 0;
+}
+.selected-user-info { flex: 1; min-width: 0; }
+.selected-user-info .name { font-size: 15px; font-weight: 600; }
+.selected-user-info .status { font-size: 11.5px; color: var(--text-muted); display: flex; align-items: center; gap: 5px; margin-top: 2px; }
+.s-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-muted); }
+.s-dot.online { background: var(--green); animation: blink 2s infinite; }
+
+.header-actions { display: flex; gap: 7px; }
+.hdr-btn {
+  height: 34px; padding: 0 12px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 9px; color: var(--text-muted); font-size: 12px;
+  font-family: 'Sora', sans-serif; cursor: pointer;
+  display: flex; align-items: center; gap: 6px;
+  transition: all .2s;
+}
+.hdr-btn:hover { border-color: var(--accent); color: var(--accent2); }
+.hdr-btn.danger:hover { border-color: var(--red); color: var(--red); }
+.hdr-btn.orange { border-color: rgba(249,115,22,.4); color: var(--orange); background: rgba(249,115,22,.08); }
+.hdr-btn.orange:hover { background: rgba(249,115,22,.15); }
+
+/* Tabs */
+.tabs {
+  display: flex; border-bottom: 1px solid var(--border);
+  background: var(--surface); flex-shrink: 0;
+  padding: 0 20px;
+}
+.tab-btn {
+  padding: 10px 16px; font-size: 13px;
+  font-family: 'Sora', sans-serif; background: none;
+  border: none; border-bottom: 2px solid transparent;
+  color: var(--text-muted); cursor: pointer;
+  display: flex; align-items: center; gap: 7px;
+  transition: color .2s, border-color .2s;
+}
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--orange); border-bottom-color: var(--orange); }
+.tab-badge {
+  background: var(--orange); color: white;
+  font-size: 9px; font-weight: 700;
+  padding: 1px 5px; border-radius: 8px;
+}
+
+/* Tab panels */
+.tab-panel { display: none; flex: 1; overflow: hidden; flex-direction: column; }
+.tab-panel.active { display: flex; }
+
+/* ── CHAT PANEL ── */
+.chat-view {
+  flex: 1; overflow-y: auto;
+  padding: 16px 20px;
+  display: flex; flex-direction: column; gap: 14px;
+  min-height: 0;
+}
+.chat-view::-webkit-scrollbar { width: 4px; }
+.chat-view::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.empty-state {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 12px; color: var(--text-muted);
+}
+.empty-state i { font-size: 40px; opacity: .3; }
+.empty-state p { font-size: 13px; }
+
+.chat-bubble-wrap {
+  display: flex; gap: 10px;
+  max-width: min(72%, 640px);
+  align-items: flex-end;
+}
+.chat-bubble-wrap.ai-msg { flex-direction: row-reverse; margin-left: auto; }
+.chat-bubble-wrap.user-msg { margin-right: auto; }
+
+.chat-avt {
+  width: 32px; height: 32px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; flex-shrink: 0;
+  align-self: flex-end; margin-bottom: 2px;
+}
+.chat-avt.user { background: linear-gradient(135deg,#7c6af7,#a78bfa); color: white; }
+.chat-avt.ai { background: linear-gradient(135deg,#1a1d24,#252932); border: 1px solid var(--border); color: var(--text-muted); }
+.chat-avt.admin { background: linear-gradient(135deg,#f97316,#fbbf24); color: white; }
+
+.chat-content { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 3px; }
+.chat-bubble-wrap.ai-msg .chat-content { align-items: flex-end; }
+.chat-bubble-wrap.user-msg .chat-content { align-items: flex-start; }
+
+.chat-role {
+  font-size: 10px; color: var(--text-muted);
+  font-weight: 600; text-transform: uppercase;
+  letter-spacing: .5px; padding: 0 3px;
+}
+
+.bubble-box {
+  display: inline-block;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 4px 14px 14px 14px;
+  padding: 10px 14px; font-size: 13.5px;
+  line-height: 1.68; color: var(--text);
+  word-break: break-word; max-width: 100%;
+}
+.chat-bubble-wrap.ai-msg .bubble-box {
+  border-radius: 14px 4px 14px 14px;
+  background: var(--surface3);
+}
+.bubble-box.admin-bubble {
+  border-color: rgba(249,115,22,0.5);
+  border-left: 3px solid var(--orange);
+  background: rgba(249,115,22,0.07);
+  border-radius: 4px 14px 14px 14px;
+}
+.admin-label {
+  font-size: 10px; color: var(--orange); font-weight: 700;
+  letter-spacing: .5px; margin-bottom: 4px;
+  display: flex; align-items: center; gap: 5px;
+}
+.bubble-meta {
+  font-size: 10px; color: var(--text-muted);
+  display: flex; align-items: center; gap: 4px;
+  padding: 0 3px;
+}
+
+/* Send bar */
+.send-bar {
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  display: flex; gap: 8px; align-items: flex-end;
+  flex-shrink: 0;
+}
+.send-bar textarea {
+  flex: 1; background: var(--surface2);
+  border: 1px solid var(--border); border-radius: 10px;
+  color: var(--text); font-family: 'Sora', sans-serif;
+  font-size: 13.5px; padding: 10px 13px;
+  outline: none; resize: none; line-height: 1.5;
+  transition: border-color .2s; max-height: 120px;
+}
+.send-bar textarea:focus { border-color: var(--orange); }
+.send-bar textarea::placeholder { color: var(--text-muted); }
+.send-btn {
+  height: 42px; padding: 0 18px;
+  background: linear-gradient(135deg,#f97316,#fbbf24);
+  border: none; border-radius: 10px; color: white;
+  font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 600;
+  cursor: pointer; display: flex; align-items: center; gap: 7px;
+  transition: opacity .2s, transform .2s; flex-shrink: 0;
+}
+.send-btn:hover { opacity: .9; transform: translateY(-1px); }
+.send-btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+
+/* ── LOGS PANEL ── */
+.logs-panel { flex: 1; overflow-y: auto; padding: 16px; }
+.logs-panel::-webkit-scrollbar { width: 3px; }
+.logs-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+.log-entry {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 12px; border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface); margin-bottom: 6px;
+  font-size: 12.5px;
+}
+.log-icon { font-size: 13px; flex-shrink: 0; margin-top: 1px; }
+.log-text { flex: 1; color: var(--text-dim); line-height: 1.5; }
+.log-text strong { color: var(--text); }
+.log-time { font-size: 10.5px; color: var(--text-muted); flex-shrink: 0; font-family: 'JetBrains Mono', monospace; }
+
+/* ── BROADCAST PANEL ── */
+.broadcast-panel { padding: 20px; overflow-y: auto; flex: 1; }
+.broadcast-panel h3 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+.broadcast-panel p { font-size: 12.5px; color: var(--text-muted); margin-bottom: 20px; }
+.broadcast-form { display: flex; flex-direction: column; gap: 12px; max-width: 600px; }
+.broadcast-form label { font-size: 12px; color: var(--text-dim); margin-bottom: 4px; display: block; }
+.broadcast-form textarea {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; color: var(--text);
+  font-family: 'Sora', sans-serif; font-size: 13.5px;
+  padding: 12px 14px; outline: none; resize: vertical;
+  min-height: 100px; transition: border-color .2s;
+}
+.broadcast-form textarea:focus { border-color: var(--orange); }
+.target-options { display: flex; gap: 8px; flex-wrap: wrap; }
+.target-opt {
+  padding: 6px 14px; border-radius: 20px;
+  border: 1px solid var(--border); background: none;
+  color: var(--text-muted); font-family: 'Sora', sans-serif;
+  font-size: 12px; cursor: pointer; transition: all .15s;
+}
+.target-opt:hover { border-color: var(--orange); color: var(--orange); }
+.target-opt.active { background: rgba(249,115,22,.15); border-color: var(--orange); color: var(--orange); }
+.broadcast-send-btn {
+  padding: 11px 24px; width: fit-content;
+  background: linear-gradient(135deg,#f97316,#fbbf24);
+  border: none; border-radius: 10px; color: white;
+  font-family: 'Sora', sans-serif; font-size: 13.5px; font-weight: 600;
+  cursor: pointer; display: flex; align-items: center; gap: 8px;
+  transition: opacity .2s, transform .2s;
+}
+.broadcast-send-btn:hover { opacity: .9; transform: translateY(-1px); }
+.broadcast-send-btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+
+/* ── STATS PANEL ── */
+.stats-panel { padding: 20px; overflow-y: auto; flex: 1; }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 24px; }
+.stat-big {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px;
+}
+.stat-big .label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 8px; }
+.stat-big .value { font-size: 32px; font-weight: 700; }
+.stat-big .sub { font-size: 11.5px; color: var(--text-muted); margin-top: 4px; }
+.stat-big.green .value { color: var(--green); }
+.stat-big.purple .value { color: var(--accent2); }
+.stat-big.yellow .value { color: var(--yellow); }
+.stat-big.orange .value { color: var(--orange); }
+
+.table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.table-head { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 12px; font-weight: 600; color: var(--text-dim); }
+.table-row {
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+  padding: 10px 16px; border-bottom: 1px solid var(--border);
+  font-size: 12.5px; align-items: center;
+  transition: background .15s;
+}
+.table-row:last-child { border-bottom: none; }
+.table-row:hover { background: var(--surface2); }
+.table-row.header { color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: .5px; }
+.table-row.header:hover { background: none; }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(60px);
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px 18px;
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; color: var(--text);
+  transition: transform .3s ease, opacity .3s;
+  opacity: 0; z-index: 999; pointer-events: none;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+.toast.ok { border-color: var(--green); }
+.toast.err { border-color: var(--red); }
+.toast.info { border-color: var(--accent); }
+.toast i.ok { color: var(--green); }
+.toast i.err { color: var(--red); }
+.toast i.info { color: var(--accent2); }
+
+/* ── DELETE MODAL ── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+  display: none; align-items: center; justify-content: center;
+  z-index: 50;
+}
+.modal-overlay.show { display: flex; }
+.modal-box {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 28px; width: min(380px, 90vw);
+  text-align: center;
+}
+.modal-box h3 { font-size: 17px; margin-bottom: 8px; }
+.modal-box p { font-size: 13px; color: var(--text-muted); margin-bottom: 22px; line-height: 1.6; }
+.modal-btns { display: flex; gap: 8px; }
+.modal-btns button { flex: 1; padding: 11px; border-radius: 9px; font-family: 'Sora', sans-serif; font-size: 13.5px; font-weight: 600; cursor: pointer; border: none; transition: all .2s; }
+.modal-cancel { background: var(--surface2); color: var(--text-dim); border: 1px solid var(--border) !important; }
+.modal-cancel:hover { background: var(--surface3); }
+.modal-confirm { background: var(--red); color: white; }
+.modal-confirm:hover { opacity: .9; }
+
+/* Sidebar overlay backdrop */
+#sidebarOverlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.55); z-index: 19;
+  backdrop-filter: blur(2px);
+}
+#sidebarOverlay.show { display: block; }
+
+/* ── RESPONSIVE ── */
+@media(max-width: 900px) {
+  #sidebar { width: 240px; }
+}
+@media(max-width: 700px) {
+  #app { position: relative; }
+  #sidebar {
+    width: 280px; position: fixed; left: 0; top: 0; bottom: 0;
+    z-index: 20; transform: translateX(-100%);
+    transition: transform .25s ease; display: flex !important;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+  }
+  #sidebar.mob-open { transform: translateX(0); }
+  #main { width: 100%; }
+  .main-header { padding: 10px 12px; gap: 8px; }
+  .header-actions { gap: 5px; }
+  .hdr-btn span { display: none; }
+  .hdr-btn { padding: 0 10px; }
+  .tabs { padding: 0 8px; overflow-x: auto; }
+  .tab-btn { padding: 10px 10px; font-size: 12px; white-space: nowrap; }
+  .chat-bubble-wrap { max-width: 88%; }
+  .send-bar { padding: 8px 10px; }
+  .stat-cards { grid-template-columns: 1fr 1fr; }
+  .mob-menu-btn { display: flex !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── LOGIN ── -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo"><i class="fa-solid fa-shield-halved"></i></div>
+    <h1>Admin Panel</h1>
+    <p>YAREUU AI — Masuk sebagai administrator</p>
+    <input class="login-input" type="text" id="loginUser" placeholder="Username admin" autocomplete="off">
+    <input class="login-input" type="password" id="loginPass" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()"><i class="fa-solid fa-right-to-bracket"></i> Masuk</button>
+    <div class="login-err" id="loginErr">Username atau password salah!</div>
+  </div>
+</div>
+
+<!-- ── APP ── -->
+<div id="sidebarOverlay" onclick="closeMobSidebar()"></div>
+<div id="app" class="hide">
+
+  <!-- Sidebar -->
+  <div id="sidebar">
+    <div class="sidebar-head">
+      <div class="admin-logo"><i class="fa-solid fa-shield-halved"></i></div>
+      <div class="sidebar-brand">
+        <div class="brand-name">Admin Panel</div>
+        <div class="brand-sub">YAREUU AI</div>
+      </div>
+    </div>
+
+    <div class="stat-cards">
+      <div class="stat-card online">
+        <div class="stat-label"><i class="fa-solid fa-circle" style="color:var(--green);font-size:7px"></i> Online</div>
+        <div class="stat-val" id="statOnline">0</div>
+      </div>
+      <div class="stat-card total">
+        <div class="stat-label"><i class="fa-solid fa-users" style="font-size:9px"></i> Total</div>
+        <div class="stat-val" id="statTotal">0</div>
+      </div>
+      <div class="stat-card msgs">
+        <div class="stat-label"><i class="fa-solid fa-message" style="font-size:9px"></i> Pesan</div>
+        <div class="stat-val" id="statMsgs">0</div>
+      </div>
+      <div class="stat-card today">
+        <div class="stat-label"><i class="fa-solid fa-calendar-day" style="font-size:9px"></i> Hari ini</div>
+        <div class="stat-val" id="statToday">0</div>
+      </div>
+    </div>
+
+    <div class="user-list-head">
+      <span>Daftar User</span>
+      <button class="refresh-btn" onclick="loadData()" title="Refresh"><i class="fa-solid fa-arrows-rotate"></i></button>
+    </div>
+
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" placeholder="Cari user..." oninput="filterUsers(this.value)" id="userSearch">
+    </div>
+
+    <div class="user-list" id="userList">
+      <div style="padding:20px;text-align:center;color:var(--text-muted);font-size:12px">
+        <i class="fa-solid fa-spinner fa-spin"></i> Memuat...
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="admin-logo" style="width:28px;height:28px;font-size:12px;flex-shrink:0"><i class="fa-solid fa-shield-halved"></i></div>
+      <div class="admin-label">
+        <div class="name" id="adminNameLabel">Admin</div>
+        <div class="role">Administrator</div>
+      </div>
+      <button class="logout-btn" onclick="doLogout()"><i class="fa-solid fa-right-from-bracket"></i></button>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div id="main">
+    <div class="main-header">
+      <button class="mob-menu-btn" id="mobMenuBtn" onclick="toggleMobSidebar()"
+        style="display:none;background:none;border:1px solid var(--border);color:var(--text-muted);width:34px;height:34px;border-radius:9px;cursor:pointer;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <div class="selected-user-info">
+        <div class="name" id="headerUserName">Pilih user dari sidebar</div>
+        <div class="status" id="headerUserStatus">
+          <div class="s-dot" id="headerDot"></div>
+          <span id="headerStatusText">—</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="hdr-btn" onclick="loadUserChat(selectedUser)" id="refreshChatBtn" style="display:none">
+          <i class="fa-solid fa-arrows-rotate"></i> Refresh
+        </button>
+        <button class="hdr-btn danger" onclick="confirmDelete()" id="deleteUserBtn" style="display:none">
+          <i class="fa-solid fa-trash"></i> Hapus Semua Chat
+        </button>
+        <button class="hdr-btn orange" onclick="switchTab('broadcast')" id="broadcastQuickBtn" style="display:none">
+          <i class="fa-solid fa-paper-plane"></i> Broadcast
+        </button>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('chat')" id="tab-chat">
+        <i class="fa-solid fa-comments"></i> Chat
+      </button>
+      <button class="tab-btn" onclick="switchTab('logs')" id="tab-logs">
+        <i class="fa-solid fa-list"></i> Activity Log
+      </button>
+      <button class="tab-btn" onclick="switchTab('broadcast')" id="tab-broadcast">
+        <i class="fa-solid fa-bullhorn"></i> Broadcast
+      </button>
+      <button class="tab-btn" onclick="switchTab('stats')" id="tab-stats">
+        <i class="fa-solid fa-chart-bar"></i> Statistik
+      </button>
+    </div>
+
+    <!-- Tab: Chat -->
+    <div class="tab-panel active" id="panel-chat">
+      <div class="chat-view" id="chatView">
+        <div class="empty-state">
+          <i class="fa-solid fa-comments"></i>
+          <p>Pilih user untuk melihat chat mereka</p>
+        </div>
+      </div>
+      <div class="send-bar" id="sendBar" style="display:none">
+        <textarea id="adminMsgInput" placeholder="Kirim pesan ke user ini sebagai ADMIN..." rows="1"
+          oninput="autoResizeTA(this)" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAdminMsg();}"></textarea>
+        <button class="send-btn" onclick="sendAdminMsg()" id="sendMsgBtn">
+          <i class="fa-solid fa-paper-plane"></i> Kirim
+        </button>
+      </div>
+    </div>
+
+    <!-- Tab: Logs -->
+    <div class="tab-panel" id="panel-logs">
+      <div class="logs-panel" id="logsPanel">
+        <div class="empty-state" style="height:200px;display:flex;">
+          <i class="fa-solid fa-list"></i>
+          <p>Belum ada aktivitas</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Broadcast -->
+    <div class="tab-panel" id="panel-broadcast">
+      <div class="broadcast-panel">
+        <h3><i class="fa-solid fa-bullhorn" style="color:var(--orange);margin-right:8px"></i>Broadcast Pesan</h3>
+        <p>Kirim pesan ke semua user atau user yang sedang online sebagai ADMIN</p>
+        <div class="broadcast-form">
+          <div>
+            <label>Target penerima</label>
+            <div class="target-options">
+              <button class="target-opt active" id="target-all" onclick="setTarget('all')">
+                <i class="fa-solid fa-users"></i> Semua User
+              </button>
+              <button class="target-opt" id="target-online" onclick="setTarget('online')">
+                <i class="fa-solid fa-circle" style="color:var(--green);font-size:8px"></i> User Online Saja
+              </button>
+            </div>
+          </div>
+          <div>
+            <label>Pesan broadcast</label>
+            <textarea id="broadcastMsg" placeholder="Tulis pesan yang akan dikirim ke semua user..."></textarea>
+          </div>
+          <button class="broadcast-send-btn" onclick="sendBroadcast()" id="broadcastBtn">
+            <i class="fa-solid fa-paper-plane"></i> Kirim Broadcast
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Statistik -->
+    <div class="tab-panel" id="panel-stats">
+      <div class="stats-panel">
+        <div class="stats-grid" id="statsGrid">
+          <div class="stat-big green">
+            <div class="label">User Online</div>
+            <div class="value" id="s-online">0</div>
+            <div class="sub">Aktif sekarang</div>
+          </div>
+          <div class="stat-big purple">
+            <div class="label">Total User</div>
+            <div class="value" id="s-total">0</div>
+            <div class="sub">Terdaftar</div>
+          </div>
+          <div class="stat-big yellow">
+            <div class="label">Total Pesan</div>
+            <div class="value" id="s-msgs">0</div>
+            <div class="sub">Semua waktu</div>
+          </div>
+          <div class="stat-big orange">
+            <div class="label">Pesan Hari Ini</div>
+            <div class="value" id="s-today">0</div>
+            <div class="sub">Tanggal <span id="s-date"></span></div>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <div class="table-head">Aktivitas per User</div>
+          <div class="table-row header">
+            <span>Nama User</span>
+            <span>Status</span>
+            <span>Total Pesan</span>
+            <span>Terakhir Aktif</span>
+          </div>
+          <div id="statsTableBody"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete modal -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal-box">
+    <div style="font-size:36px;margin-bottom:12px">🗑️</div>
+    <h3>Hapus Semua Chat?</h3>
+    <p>Semua riwayat chat <strong id="deleteUserNameLabel"></strong> akan dihapus permanen dari Firebase. Aksi ini tidak bisa dibatalkan.</p>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="document.getElementById('deleteModal').classList.remove('show')">Batal</button>
+      <button class="modal-confirm" onclick="deleteUserChat()">Hapus</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <i id="toastIcon"></i>
+  <span id="toastMsg"></span>
+</div>
+
+<script>
+// ══ CONFIG ══
+const FIREBASE_DB_URL = 'https://user-e9bb1-default-rtdb.asia-southeast1.firebasedatabase.app';
+
+// ══ STATE ══
+let allUsers = {};
+let presenceData = {};
+let chatsData = {};
+let selectedUser = null;
+let broadcastTarget = 'all';
+let logs = [];
+let pollTimer = null;
+let adminName = '';
+
+// ══ HASH UTILS ══
+// SHA-256 via Web Crypto API (built-in browser, tidak butuh library)
+async function sha256(str) {
+  const buf = await crypto.subtle.digest(
+    'SHA-256',
+    new TextEncoder().encode(str)
+  );
+  return Array.from(new Uint8Array(buf))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+// ══ LOGIN ══
+async function doLogin() {
+  const btn = document.querySelector('.login-btn');
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value;
+
+  if (!u || !p) {
+    showLoginErr('Username dan password wajib diisi!');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memverifikasi...';
+
+  try {
+    // Hash password sebelum bandingkan — plain text tidak pernah dikirim ke Firebase
+    const inputHash = await sha256(u + ':' + p);
+
+    // Ambil hash dari Firebase path khusus admin
+    const res = await fetch(`${FIREBASE_DB_URL}/admin_accounts/${u}/passwordHash.json`);
+
+    if (!res.ok) throw new Error('fetch_fail');
+    const storedHash = await res.json();
+
+    if (storedHash && storedHash === inputHash) {
+      // Login berhasil
+      adminName = u;
+      document.getElementById('adminNameLabel').textContent = u;
+      document.getElementById('loginScreen').classList.add('hide');
+      document.getElementById('app').classList.remove('hide');
+      loadData();
+      startPolling();
+    } else {
+      showLoginErr('Username atau password salah!');
+    }
+  } catch(e) {
+    showLoginErr('Gagal terhubung ke server. Coba lagi.');
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Masuk';
+}
+
+function showLoginErr(msg) {
+  const err = document.getElementById('loginErr');
+  err.textContent = msg;
+  err.style.display = 'block';
+  setTimeout(() => err.style.display = 'none', 3500);
+}
+
+function doLogout() {
+  clearInterval(pollTimer);
+  document.getElementById('loginScreen').classList.remove('hide');
+  document.getElementById('app').classList.add('hide');
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+}
+
+// ══ FETCH DATA ══
+async function loadData() {
+  try {
+    const [presRes, chatRes] = await Promise.all([
+      fetch(`${FIREBASE_DB_URL}/presence.json`),
+      fetch(`${FIREBASE_DB_URL}/chats.json`)
+    ]);
+    presenceData = (await presRes.json()) || {};
+    chatsData    = (await chatRes.json()) || {};
+    renderUserList();
+    updateStats();
+    if (selectedUser) {
+      updateHeaderStatus(selectedUser);
+      loadUserChat(selectedUser);
+    }
+    updateStatsTab();
+  } catch(e) {
+    showToast('Gagal memuat data Firebase', 'err');
+  }
+}
+
+function startPolling() {
+  clearInterval(pollTimer);
+  pollTimer = setInterval(loadData, 8000);
+}
+
+// ══ USERS ══
+function getAllUsernames() {
+  const set = new Set([
+    ...Object.keys(presenceData),
+    ...Object.keys(chatsData)
+  ]);
+  return [...set];
+}
+
+function isOnline(username) {
+  const p = presenceData[username];
+  if (!p || !p.online) return false;
+  // Anggap online kalau lastSeen < 40 detik lalu
+  const last = new Date(p.lastSeen).getTime();
+  return (Date.now() - last) < 40000;
+}
+
+function getUserMsgCount(username) {
+  const msgs = chatsData[username]?.messages;
+  if (!msgs) return 0;
+  return Object.keys(msgs).length;
+}
+
+function getTodayMsgCount(username) {
+  const msgs = chatsData[username]?.messages;
+  if (!msgs) return 0;
+  const today = getFormattedDate();
+  return Object.values(msgs).filter(m => m.date === today).length;
+}
+
+function getFormattedDate() {
+  const now = new Date();
+  return String(now.getDate()).padStart(2,'0') + '-' + String(now.getMonth()+1).padStart(2,'0');
+}
+
+function formatLastSeen(username) {
+  const p = presenceData[username];
+  if (!p || !p.lastSeen) return '—';
+  const d = new Date(p.lastSeen);
+  const diff = Math.floor((Date.now() - d.getTime()) / 1000);
+  if (diff < 60) return 'Baru saja';
+  if (diff < 3600) return Math.floor(diff/60) + ' menit lalu';
+  if (diff < 86400) return Math.floor(diff/3600) + ' jam lalu';
+  return d.toLocaleDateString('id-ID', { day:'numeric', month:'short' });
+}
+
+let userSearchQ = '';
+function filterUsers(q) { userSearchQ = q; renderUserList(); }
+
+function renderUserList() {
+  const list = document.getElementById('userList');
+  let names = getAllUsernames();
+
+  if (userSearchQ.trim()) {
+    const q = userSearchQ.toLowerCase();
+    names = names.filter(n => n.toLowerCase().includes(q));
+  }
+
+  // Sort: online first
+  names.sort((a,b) => (isOnline(b)?1:0) - (isOnline(a)?1:0));
+
+  if (!names.length) {
+    list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-muted);font-size:12px">Belum ada user</div>';
+    return;
+  }
+
+  list.innerHTML = names.map(name => {
+    const online = isOnline(name);
+    const nick = presenceData[name]?.nickname || name;
+    const msgs = getUserMsgCount(name);
+    const active = name === selectedUser ? ' active' : '';
+    return `<div class="user-item${active}" onclick="selectUser('${name}')">
+      <div class="user-avatar-wrap">
+        <div class="user-avatar">${nick.charAt(0).toUpperCase()}</div>
+        <div class="presence-dot ${online?'online':''}"></div>
+      </div>
+      <div class="user-info-col">
+        <div class="user-name">${escHtml(nick)}</div>
+        <div class="user-meta">${msgs} pesan · ${formatLastSeen(name)}</div>
+      </div>
+      <span class="user-badge ${online?'online':'offline'}">${online?'Online':'Offline'}</span>
+    </div>`;
+  }).join('');
+
+  // Stats
+  const onlineCount = names.filter(n => isOnline(n)).length;
+  document.getElementById('statOnline').textContent = onlineCount;
+  document.getElementById('statTotal').textContent = names.length;
+}
+
+function updateStats() {
+  const names = getAllUsernames();
+  const totalMsgs = names.reduce((s,n) => s + getUserMsgCount(n), 0);
+  const todayMsgs = names.reduce((s,n) => s + getTodayMsgCount(n), 0);
+  document.getElementById('statMsgs').textContent = totalMsgs;
+  document.getElementById('statToday').textContent = todayMsgs;
+}
+
+// ══ SELECT USER ══
+function selectUser(username) {
+  selectedUser = username;
+  renderUserList();
+
+  const nick = presenceData[username]?.nickname || username;
+  document.getElementById('headerUserName').textContent = nick;
+  document.getElementById('deleteUserNameLabel').textContent = nick;
+  updateHeaderStatus(username);
+
+  // Show action buttons
+  document.getElementById('refreshChatBtn').style.display = '';
+  document.getElementById('deleteUserBtn').style.display = '';
+  document.getElementById('broadcastQuickBtn').style.display = '';
+  document.getElementById('sendBar').style.display = '';
+
+  loadUserChat(username);
+  switchTab('chat');
+}
+
+function updateHeaderStatus(username) {
+  const online = isOnline(username);
+  const dot = document.getElementById('headerDot');
+  const txt = document.getElementById('headerStatusText');
+  dot.className = 's-dot' + (online?' online':'');
+  txt.textContent = online ? 'Online sekarang' : 'Offline · ' + formatLastSeen(username);
+}
+
+// ══ CHAT VIEW ══
+function loadUserChat(username) {
+  if (!username) return;
+  const view = document.getElementById('chatView');
+  const msgs = chatsData[username]?.messages;
+
+  if (!msgs || !Object.keys(msgs).length) {
+    view.innerHTML = '<div class="empty-state"><i class="fa-solid fa-comment-slash"></i><p>Belum ada chat dari user ini</p></div>';
+    return;
+  }
+
+  const entries = Object.entries(msgs).sort((a,b) => a[0].localeCompare(b[0]));
+  view.innerHTML = entries.map(([key, m]) => {
+    const isUser = m.role === 'user';
+    const isAdmin = m.chat && m.chat.startsWith('[ADMIN]');
+    const wrapClass = isUser ? 'user-msg' : 'ai-msg';
+    const avtClass = isAdmin ? 'admin' : (isUser ? 'user' : 'ai');
+    const avtIcon = isAdmin ? 'fa-solid fa-shield-halved' : (isUser ? 'fa-solid fa-user' : 'fa-solid fa-robot');
+    const roleLabel = isAdmin ? 'ADMIN' : (isUser ? (presenceData[username]?.nickname || username) : 'YAREUU AI');
+    const text = isAdmin ? m.chat.replace('[ADMIN] ', '') : m.chat;
+    const bubbleContent = isAdmin
+      ? `<div class="admin-label"><i class="fa-solid fa-shield-halved"></i> ADMIN</div>${escHtml(text).replace(/\n/g,'<br>')}`
+      : escHtml(text).replace(/\n/g,'<br>');
+    const bubbleClass = isAdmin ? 'bubble-box admin-bubble' : 'bubble-box';
+
+    return `<div class="chat-bubble-wrap ${wrapClass}">
+      <div class="chat-avt ${avtClass}"><i class="${avtIcon}"></i></div>
+      <div class="chat-content">
+        <div class="chat-role">${escHtml(roleLabel)}</div>
+        <div class="${bubbleClass}">${bubbleContent}</div>
+        <div class="bubble-meta"><i class="fa-regular fa-clock" style="font-size:9px"></i> ${m.date || '—'}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  view.scrollTop = view.scrollHeight;
+}
+
+// ══ SEND ADMIN MSG ══
+async function sendAdminMsg() {
+  if (!selectedUser) return showToast('Pilih user dulu!', 'err');
+  const input = document.getElementById('adminMsgInput');
+  const text = input.value.trim();
+  if (!text) return;
+
+  const btn = document.getElementById('sendMsgBtn');
+  btn.disabled = true;
+
+  const entry = {
+    chat: text,
+    date: getFormattedDate(),
+    role: 'admin',
+    from: 'ADMIN',
+    shown: false,
+    sentAt: new Date().toISOString()
+  };
+
+  try {
+    // Kirim ke /admin_msgs/{user} — akan dipoll oleh index.html
+    await fetch(`${FIREBASE_DB_URL}/admin_msgs/${selectedUser}.json`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(entry)
+    });
+
+    // Simpan juga ke /chats/{user}/messages supaya terlihat di chat view admin
+    await fetch(`${FIREBASE_DB_URL}/chats/${selectedUser}/messages.json`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat: '[ADMIN] ' + text, date: getFormattedDate(), role: 'ai' })
+    });
+
+    input.value = '';
+    autoResizeTA(input);
+    addLog('send', `Pesan ke <strong>${presenceData[selectedUser]?.nickname || selectedUser}</strong>: "${text.slice(0,40)}${text.length>40?'…':''}"`, 'orange');
+    showToast('Pesan terkirim!', 'ok');
+    await loadData();
+  } catch(e) {
+    showToast('Gagal kirim pesan', 'err');
+  }
+
+  btn.disabled = false;
+}
+
+// ══ BROADCAST ══
+function setTarget(t) {
+  broadcastTarget = t;
+  document.querySelectorAll('.target-opt').forEach(b => b.classList.remove('active'));
+  document.getElementById('target-' + t).classList.add('active');
+}
+
+async function sendBroadcast() {
+  const text = document.getElementById('broadcastMsg').value.trim();
+  if (!text) return showToast('Tulis pesan broadcast dulu!', 'err');
+
+  const btn = document.getElementById('broadcastBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Mengirim...';
+
+  const targets = getAllUsernames().filter(u => broadcastTarget === 'online' ? isOnline(u) : true);
+  if (!targets.length) {
+    showToast('Tidak ada user yang bisa dikirim', 'err');
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Kirim Broadcast';
+    return;
+  }
+
+  const entry = { chat: text, date: getFormattedDate(), role: 'admin', from: 'ADMIN', shown: false, sentAt: new Date().toISOString() };
+  let sent = 0;
+
+  for (const u of targets) {
+    try {
+      await fetch(`${FIREBASE_DB_URL}/admin_msgs/${u}.json`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(entry)
+      });
+      await fetch(`${FIREBASE_DB_URL}/chats/${u}/messages.json`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat: '[ADMIN] ' + text, date: getFormattedDate(), role: 'ai' })
+      });
+      sent++;
+    } catch(e) {}
+  }
+
+  addLog('broadcast', `Broadcast ke <strong>${sent}</strong> user (target: ${broadcastTarget}): "${text.slice(0,40)}${text.length>40?'…':''}"`, 'orange');
+  document.getElementById('broadcastMsg').value = '';
+  showToast(`Broadcast terkirim ke ${sent} user!`, 'ok');
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Kirim Broadcast';
+  await loadData();
+}
+
+// ══ DELETE ══
+function confirmDelete() {
+  if (!selectedUser) return;
+  document.getElementById('deleteModal').classList.add('show');
+}
+
+async function deleteUserChat() {
+  if (!selectedUser) return;
+  document.getElementById('deleteModal').classList.remove('show');
+  try {
+    await fetch(`${FIREBASE_DB_URL}/chats/${selectedUser}/messages.json`, { method: 'DELETE' });
+    addLog('delete', `Hapus semua chat <strong>${presenceData[selectedUser]?.nickname || selectedUser}</strong>`, 'red');
+    showToast('Chat berhasil dihapus!', 'ok');
+    await loadData();
+  } catch(e) {
+    showToast('Gagal hapus chat', 'err');
+  }
+}
+
+// ══ LOGS ══
+function addLog(type, msg, color) {
+  const icons = { send:'fa-paper-plane', broadcast:'fa-bullhorn', delete:'fa-trash', info:'fa-circle-info' };
+  const colors = { orange:'var(--orange)', red:'var(--red)', green:'var(--green)', info:'var(--accent2)' };
+  const now = new Date();
+  const time = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0') + ':' + now.getSeconds().toString().padStart(2,'0');
+  logs.unshift({ type, msg, color: colors[color]||colors.info, icon: icons[type]||icons.info, time });
+  renderLogs();
+}
+
+function renderLogs() {
+  const panel = document.getElementById('logsPanel');
+  if (!logs.length) {
+    panel.innerHTML = '<div class="empty-state" style="height:200px;display:flex;"><i class="fa-solid fa-list"></i><p>Belum ada aktivitas</p></div>';
+    return;
+  }
+  panel.innerHTML = logs.map(l => `
+    <div class="log-entry">
+      <i class="fa-solid ${l.icon} log-icon" style="color:${l.color}"></i>
+      <div class="log-text">${l.msg}</div>
+      <div class="log-time">${l.time}</div>
+    </div>`).join('');
+}
+
+// ══ STATS TAB ══
+function updateStatsTab() {
+  const names = getAllUsernames();
+  const onlineCount = names.filter(n => isOnline(n)).length;
+  const totalMsgs = names.reduce((s,n) => s + getUserMsgCount(n), 0);
+  const todayMsgs = names.reduce((s,n) => s + getTodayMsgCount(n), 0);
+
+  document.getElementById('s-online').textContent = onlineCount;
+  document.getElementById('s-total').textContent = names.length;
+  document.getElementById('s-msgs').textContent = totalMsgs;
+  document.getElementById('s-today').textContent = todayMsgs;
+  document.getElementById('s-date').textContent = getFormattedDate();
+
+  const body = document.getElementById('statsTableBody');
+  if (!names.length) {
+    body.innerHTML = '<div style="padding:16px;text-align:center;font-size:12px;color:var(--text-muted)">Belum ada data</div>';
+    return;
+  }
+
+  const sorted = names.sort((a,b) => getUserMsgCount(b) - getUserMsgCount(a));
+  body.innerHTML = sorted.map(name => {
+    const nick = presenceData[name]?.nickname || name;
+    const online = isOnline(name);
+    const msgs = getUserMsgCount(name);
+    const last = formatLastSeen(name);
+    return `<div class="table-row">
+      <span style="font-weight:600">${escHtml(nick)}</span>
+      <span><span class="user-badge ${online?'online':'offline'}" style="font-size:10px">${online?'Online':'Offline'}</span></span>
+      <span style="color:var(--yellow);font-weight:600">${msgs}</span>
+      <span style="color:var(--text-muted)">${last}</span>
+    </div>`;
+  }).join('');
+}
+
+// ══ TABS ══
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  document.getElementById('panel-' + name).classList.add('active');
+  if (name === 'stats') updateStatsTab();
+  if (name === 'logs') renderLogs();
+}
+
+// ══ UTILS ══
+function escHtml(t) {
+  return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function autoResizeTA(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+let toastTimer;
+function showToast(msg, type='info') {
+  const t = document.getElementById('toast');
+  const icon = document.getElementById('toastIcon');
+  document.getElementById('toastMsg').textContent = msg;
+  const icons = { ok:'fa-solid fa-circle-check ok', err:'fa-solid fa-circle-xmark err', info:'fa-solid fa-circle-info info' };
+  t.className = 'toast show ' + type;
+  icon.className = icons[type] || icons.info;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── Mobile Sidebar ──
+function toggleMobSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  const isOpen = sidebar.classList.contains('mob-open');
+  if (isOpen) {
+    sidebar.classList.remove('mob-open');
+    overlay.classList.remove('show');
+  } else {
+    sidebar.classList.add('mob-open');
+    overlay.classList.add('show');
+  }
+}
+
+function closeMobSidebar() {
+  document.getElementById('sidebar').classList.remove('mob-open');
+  document.getElementById('sidebarOverlay').classList.remove('show');
+}
+
+// Close sidebar when user is selected on mobile
+const _origSelectUser = selectUser;
+selectUser = function(username) {
+  _origSelectUser(username);
+  if (window.innerWidth <= 700) closeMobSidebar();
+};
+
+// ── Enter to login ──
+document.getElementById('loginPass').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+</script>
+</body>
+</html>

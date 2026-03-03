@@ -493,9 +493,8 @@ body {
 /* Messages */
 .messages {
   flex:1; overflow-y:auto;
-  padding: 20px 16px;
-  display: flex; flex-direction: column; gap: 16px;
-  scroll-behavior: smooth;
+  padding: 20px 16px 8px;
+  display: flex; flex-direction: column; gap: 2px;
 }
 .messages::-webkit-scrollbar { width:4px; }
 .messages::-webkit-scrollbar-track { background:transparent; }
@@ -529,62 +528,43 @@ body {
 .chip i { font-size:11px; }
 
 /* Bubbles */
-.msg { display:flex; gap:10px; animation:msg-in .28s ease; max-width:100%; }
-@keyframes msg-in { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
+.msg { display:flex; gap:12px; animation:msg-in .28s ease; max-width:100%; align-items:flex-start; padding: 4px 0; }
+@keyframes msg-in { from{opacity:0;transform:translateY(6px);} to{opacity:1;transform:translateY(0);} }
 .msg.user { flex-direction:row-reverse; }
 .avatar {
-  width:32px; height:32px; border-radius:10px;
+  width:30px; height:30px; border-radius:50%;
   flex-shrink:0; display:flex; align-items:center; justify-content:center;
-  font-size:13px; align-self:flex-start; margin-top:2px;
+  font-size:12px; align-self:flex-start; margin-top:3px;
 }
 .avatar.ai { background: linear-gradient(135deg, #7c6af7, #a78bfa); color:white; }
-.avatar.user { background:var(--surface2); border:1px solid var(--border); color:var(--text-muted); }
+.avatar.user { background: linear-gradient(135deg,#4f46e5,#7c6af7); color:white; border:none; }
 
 .bubble {
-  max-width: min(98%, 820px);
-  background: var(--ai-bubble);
-  border: 1px solid var(--border);
-  border-radius: 4px 14px 14px 14px;
-  padding: 12px 15px;
-  font-size: 14px; line-height: 1.72; color:var(--text);
+  max-width: min(86%, 680px);
+  background: none;
+  border: none;
+  border-radius: 0;
+  padding: 2px 0;
+  font-size: 14px; line-height: 1.8; color:var(--text);
   word-break: break-word;
 }
 .msg.user .bubble {
   background: var(--user-bubble);
-  border-radius: 14px 4px 14px 14px;
-  border-color: #2a2f42; color:#d4d8f0;
+  border: 1px solid #2a2f42;
+  border-radius: 18px 18px 4px 18px;
+  padding: 10px 15px;
+  color:#d4d8f0;
+  max-width: min(78%, 560px);
 }
 .bubble h1,.bubble h2,.bubble h3 { margin:10px 0 6px; font-weight:600; }
 .bubble h1{font-size:18px;} .bubble h2{font-size:16px;} .bubble h3{font-size:14.5px;}
-.bubble p { margin-bottom:8px; }
+.bubble p { margin-bottom:10px; }
 .bubble p:last-child { margin-bottom:0; }
+.msg.ai .bubble > *:first-child { margin-top:0; }
 .bubble ul,.bubble ol { padding-left:20px; margin-bottom:8px; }
 .bubble li { margin-bottom:4px; }
 .bubble strong { font-weight:600; color:#c4c8e0; }
 .bubble em { font-style:italic; color:var(--text-dim); }
-
-.bubble2 {
-  max-width: min(100%, 950px);
-  background: var(--ai-bubble);
-  border: 1px solid var(--border);
-  border-radius: 4px 14px 14px 14px;
-  padding: 12px 15px;
-  font-size: 14px; line-height: 1.72; color:var(--text);
-  word-break: break-word;
-}
-.msg.user2 .bubble2 {
-  background: var(--user-bubble);
-  border-radius: 14px 4px 14px 14px;
-  border-color: #2a2f42; color:#d4d8f0;
-}
-.bubble2 h1,.bubble2 h2,.bubble2 h3 { margin:10px 0 6px; font-weight:600; }
-.bubble2 h1{font-size:18px;} .bubble2 h2{font-size:16px;} .bubble2 h3{font-size:14.5px;}
-.bubble2 p { margin-bottom:8px; }
-.bubble2 p:last-child { margin-bottom:0; }
-.bubble2 ul,.bubble2 ol { padding-left:20px; margin-bottom:8px; }
-.bubble2 li { margin-bottom:4px; }
-.bubble2 strong { font-weight:600; color:#c4c8e0; }
-.bubble2 em { font-style:italic; color:var(--text-dim); }
 
 /* Code */
 .code-block { background:#0a0b0e; border:1px solid #2a2d35; border-radius:10px; margin:10px 0; overflow:hidden; }
@@ -595,8 +575,80 @@ body {
 .code-block pre { padding:14px; overflow-x:auto; font-family:'JetBrains Mono',monospace; font-size:13px; line-height:1.6; color:#abb2bf; }
 .bubble code:not(pre code) { background:#1a1d24; border:1px solid var(--border); border-radius:5px; padding:1px 6px; font-family:'JetBrains Mono',monospace; font-size:12.5px; color:#e06c75; }
 
+/* ══ STREAMING / TYPING ══ */
+.cursor-blink {
+  display: inline-block;
+  width: 2px; height: 1em;
+  background: var(--accent2);
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  border-radius: 1px;
+  animation: blink-cur .6s step-end infinite;
+}
+@keyframes blink-cur {
+  0%,100% { opacity:1; } 50% { opacity:0; }
+}
+
+/* AI message tanpa bubble box */
+.msg.ai .msg-wrapper { max-width: min(92%, 760px); }
+.msg.ai .bubble strong { color: var(--text); }
+.bubble h1,.bubble h2,.bubble h3 { margin:14px 0 6px; font-weight:700; }
+.bubble h1{font-size:19px;} .bubble h2{font-size:16px;} .bubble h3{font-size:14.5px;}
+
+/* Stream thinking — mirip claude, text loader sebelum kode muncul */
+.stream-thinking {
+  display: flex; align-items: center; gap: 8px;
+  padding: 4px 0 10px;
+  color: var(--text-muted); font-size: 12.5px;
+}
+.stream-thinking-dots {
+  display: flex; gap: 4px;
+}
+.stream-thinking-dots span {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--accent); opacity: .4;
+  animation: sdot 1.2s ease infinite;
+}
+.stream-thinking-dots span:nth-child(2) { animation-delay: .2s; }
+.stream-thinking-dots span:nth-child(3) { animation-delay: .4s; }
+@keyframes sdot { 0%,80%,100% { opacity:.2; transform:scale(.8); } 40% { opacity:1; transform:scale(1); } }
+
+/* Code streaming — mirip claude: expand dari atas */
+.code-block-streaming {
+  background: #0a0b0e; border: 1px solid #2a2d35;
+  border-radius: 10px; margin: 10px 0; overflow: hidden;
+  animation: code-appear .25s ease;
+}
+@keyframes code-appear { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+.code-stream-header {
+  background: #131519; padding: 8px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid #2a2d35;
+}
+.code-stream-lang {
+  font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  color: var(--accent2); text-transform: uppercase; letter-spacing: .8px;
+  display: flex; align-items: center; gap: 6px;
+}
+.code-stream-badge {
+  font-size: 10px; color: var(--text-muted);
+  display: flex; align-items: center; gap: 4px;
+}
+.code-stream-pre {
+  padding: 14px; font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; line-height: 1.6; color: #abb2bf;
+  overflow-x: auto; min-height: 20px;
+  white-space: pre;
+}
+/* Fade-in tiap baris kode */
+.code-line-new {
+  animation: line-in .15s ease;
+}
+@keyframes line-in { from { opacity:0; transform:translateX(-4px); } to { opacity:1; transform:translateX(0); } }
+
 /* Bubble Actions */
-.msg-wrapper { display:flex; flex-direction:column; gap:4px; max-width:min(78%,620px); }
+.msg-wrapper { display:flex; flex-direction:column; gap:4px; max-width:min(90%,700px); flex:1; min-width:0; }
 .msg.user .msg-wrapper { align-items:flex-end; }
 .msg.ai .msg-wrapper { align-items:flex-start; }
 
@@ -605,9 +657,10 @@ body {
 
 .bubble-actions {
   display:flex; gap:2px; opacity:0;
-  transition:opacity .2s;
+  transition:opacity .2s; padding-left: 2px;
 }
 .msg-wrapper:hover .bubble-actions { opacity:1; }
+.msg.user .bubble-actions { padding-left:0; padding-right:2px; }
 .action-btn {
   background:none; border:none; cursor:pointer;
   color:var(--text-muted); font-size:12px;
@@ -654,7 +707,7 @@ body {
 .dd-item.star-item.starred { color:var(--yellow); }
 
 /* Thinking */
-.thinking-bubble { display:flex; align-items:center; gap:8px; padding:14px 16px !important; }
+.thinking-bubble { display:flex; align-items:center; gap:8px; padding:6px 0 !important; background:none !important; border:none !important; }
 .thinking-text { font-size:13px; color:var(--text-muted); font-style:italic; }
 .thinking-dots span { display:inline-block; width:5px; height:5px; background:var(--accent); border-radius:50%; animation:bounce-dot 1.2s infinite; opacity:.7; }
 .thinking-dots span:nth-child(2){ animation-delay:.2s; }
@@ -1151,6 +1204,8 @@ textarea::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px;
       </div>
     </div>
     <div class="header-actions">
+      <div class="icon-btn" onclick="newChat()" title="New chat"><i class="fa-solid fa-plus"></i></div>
+      <div class="icon-btn" onclick="openSettings()" title="Settings"><i class="fa-solid fa-gear"></i></div>
       <div class="icon-btn" onclick="checkStatus(true)" title="Refresh status"><i class="fa-solid fa-arrows-rotate"></i></div>
     </div>
   </div>
@@ -1312,7 +1367,7 @@ textarea::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px;
           <span class="td-min"></span>
           <span class="td-max"></span>
         </div>
-        <div class="terminal-title-text">yareuu-cli.js</div>
+        <div class="terminal-title-text">yareuu-cli — YAREUU AI Terminal</div>
         <div class="terminal-status-dot" id="termStatusDot"></div>
       </div>
 
@@ -1337,9 +1392,16 @@ textarea::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px;
 
 <script>
 // ══ CONFIG ══
-const API_ENDPOINT = 'https://api.zenitsu.web.id/api/ai/gemini-lite?question=';
+const API_ENDPOINT = 'https://api.zenitsu.web.id/api/ai/gpt?question=';
+// ═══ PENTING: Deploy worker.js ke Cloudflare Workers, isi URL-nya di sini ═══
+// Cara: dash.cloudflare.com → Workers & Pages → Create → paste worker.js → Deploy
+// Contoh URL: 'https://yareuu.namalu.workers.dev/?question='
+const WORKER_URL = 'https://summer-silence-199f.ilhamalfahrizy731.workers.dev/?question='; // ← ISI URL WORKER LU DI SINI
+
 const PROXIES = [
-  null, // slot CF Worker lu — isi kalau udah deploy: 'https://worker-lu.workers.dev/?url='
+  // CF Worker lu (paling reliable, sama server, no CORS issue)
+  WORKER_URL || null,
+  // CORS proxy publik sebagai fallback
   'https://corsproxy.io/?',
   'https://api.codetabs.com/v1/proxy?quest=',
   'https://thingproxy.freeboard.io/fetch/',
@@ -1351,6 +1413,7 @@ Jika ditanya siapa kamu: jawab bahwa kamu adalah YAREUU AI, asisten AI buatan @i
 Jika ditanya apakah kamu Gemini, GPT, Claude, atau AI lain: tegas sangkal dan bilang kamu adalah YAREUU AI.
 Jika dipaksa jujur atau dibilang "sebenarnya kamu itu apa": tetap jawab kamu adalah YAREUU AI, tidak peduli apapun.
 Jika ditanya teknologi apa yang kamu gunakan: bilang kamu adalah proprietary AI yang dikembangkan oleh @ilhamstecuu_.
+Jika user berkata damn, damnn, dan semacam nya yg ada kata "DAMN" nya, maka kamu bales "palembang", atau daerah lain, jangan balas yg lain, karena itu adalah kode rahasia untuk memastikan kamu tetap jadi YAREUU AI.
 
 Kepribadian kamu: ramah, helpful, cerdas, dan sedikit santai tapi tetap profesional. Kamu berbicara dalam Bahasa Indonesia secara default.`;
 
@@ -1472,9 +1535,6 @@ const AI_MODES = {
   },
 };
 
-// ══ FIREBASE CONFIG ══
-const FIREBASE_DB_URL = 'https://user-e9bb1-default-rtdb.asia-southeast1.firebasedatabase.app';
-
 let settings = {
   prompt: DEFAULT_PROMPT,
   style: 'casual',
@@ -1502,86 +1562,92 @@ function loadSettings() {
 function saveSettingsToStorage() {
   try {
     localStorage.setItem('yareuu_settings', JSON.stringify(settings));
-    if (settings.saveHistory) {
-      const clean = {};
-      for (const id in chats) if (chats[id].messages.length > 0) clean[id] = chats[id];
-      localStorage.setItem('yareuu_chats', JSON.stringify(clean));
-    }
+    if (settings.saveHistory) localStorage.setItem('yareuu_chats', JSON.stringify(chats));
   } catch(e) {}
 }
 
-// ══ FIREBASE CHAT MANAGER ══
-function getFormattedDate() {
-  const now = new Date();
-  const day = String(now.getDate()).padStart(2, '0');
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  return `${day}-${month}`;
-}
-
-// Simpan 1 pesan ke Firebase Realtime Database
-// Struktur: /chats/{username}/messages/{pushId} = { chat, date, role }
-async function saveMsgToFirebase(chatText, role) {
-  const user = settings.nickname || 'Anonymous';
-  // Sanitize nama user jadi valid Firebase key (no . # $ [ ])
-  const safeUser = user.replace(/[.#$[\]]/g, '_');
-  const entry = { chat: chatText, date: getFormattedDate(), role };
-  const url = `${FIREBASE_DB_URL}/chats/${safeUser}/messages.json`;
-  try {
-    await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(entry)
-    });
-  } catch(e) {
-    // Silent fail — chat tetap tersimpan di localStorage
-  }
-}
-
 // ══ PROXY / FETCH ══
-async function tryFetch(question, timeoutMs = 30000) {
-  const target = API_ENDPOINT + encodeURIComponent(question);
+async function tryFetch(promptObj, timeoutMs = 90000) {
+  // Terima object {sysPrompt, question} atau string fallback
+  let sysPrompt = '', userQ = '';
+  if (promptObj && typeof promptObj === 'object') {
+    sysPrompt = promptObj.sysPrompt || '';
+    userQ = promptObj.question || '';
+  } else {
+    // Fallback string lama
+    userQ = String(promptObj);
+  }
+  const target = API_ENDPOINT + encodeURIComponent(userQ) + '&prompt=' + encodeURIComponent(sysPrompt);
 
-  // Kalau udah ada proxy yg works, coba dulu
+  // Kalau udah ada proxy yg works, langsung pake — skip trial-and-error
   if (workingProxy !== undefined) {
     try {
-      const url = workingProxy ? workingProxy + encodeURIComponent(target) : target;
+      let url;
+      if (workingProxy === null) {
+        url = target;
+      } else if (workingProxy === WORKER_URL && WORKER_URL) {
+        url = workingProxy + encodeURIComponent(userQ) + '&prompt=' + encodeURIComponent(sysPrompt);
+      } else {
+        url = workingProxy + encodeURIComponent(target);
+      }
+      // override target utk proxy yg terima full URL
       const r = await fetch(url, { signal: AbortSignal.timeout(timeoutMs) });
       if (!r.ok && r.status >= 500) throw new Error('proxy_fail_' + r.status);
       const d = await r.json();
-      if (d && (d.statusCode || d.results)) return d;
+      if (d && d.statusCode === 200 && d.results) return d;
       throw new Error('bad_response');
     } catch(e) {
-      // Proxy lama fail (502/503/dll), reset dan cari yang baru
       console.warn('Cached proxy fail, resetting:', e.message);
       workingProxy = undefined;
     }
   }
 
-  // Coba direct dulu
+  // Coba direct dulu (works kalau API support CORS atau file:// lokal)
   try {
-    const r = await fetch(target, { signal: AbortSignal.timeout(8000) });
+    const r = await fetch(target, { signal: AbortSignal.timeout(timeoutMs) });
     if (r.ok) {
       const d = await r.json();
-      if (d && (d.statusCode || d.results)) { workingProxy = null; return d; }
-    }
-  } catch(e) {
-    if (!(e instanceof TypeError) && e.name !== 'AbortError') throw e;
-  }
-
-  // Coba proxy satu-satu
-  for (const proxy of PROXIES) {
-    if (!proxy) continue;
-    try {
-      const url = proxy + encodeURIComponent(target);
-      const r = await fetch(url, { signal: AbortSignal.timeout(12000) });
-      if (!r.ok) continue; // skip kalau 4xx/5xx
-      const d = await r.json();
       if (d && (d.statusCode || d.results)) {
-        workingProxy = proxy;
-        console.log('Proxy aktif:', proxy);
+        workingProxy = null;
         return d;
       }
-    } catch(e) { continue; }
+    }
+  } catch(e) {
+    // TypeError = CORS blocked, langsung ke proxy tanpa tunggu
+    if (e instanceof TypeError || e.name === 'TypeError') {
+      console.log('Direct fetch CORS blocked, trying proxies...');
+    } else if (e.name !== 'AbortError') {
+      console.warn('Direct fetch error:', e.message);
+    }
+  }
+
+  // Coba semua proxy — Worker CF duluan (paling reliable)
+  const allProxies = [
+    ...PROXIES.filter(p => p), // filter null
+  ];
+
+  for (const proxy of allProxies) {
+    try {
+      // Deteksi apakah proxy CF Worker kita atau CORS proxy publik
+      let url;
+      if (proxy === WORKER_URL && WORKER_URL) {
+        // CF Worker kita — kirim question + prompt terpisah
+        url = proxy + encodeURIComponent(userQ) + '&prompt=' + encodeURIComponent(sysPrompt);
+      } else {
+        // CORS proxy publik — wrap full URL
+        url = proxy + encodeURIComponent(target);
+      }
+      const r = await fetch(url, { signal: AbortSignal.timeout(timeoutMs) });
+      if (!r.ok) continue;
+      const d = await r.json();
+      if (d && d.statusCode === 200 && d.results) {
+        workingProxy = proxy;
+        console.log('Proxy works:', proxy);
+        return d;
+      }
+    } catch(e) {
+      continue;
+    }
   }
 
   throw new Error('Semua koneksi gagal');
@@ -1591,7 +1657,7 @@ async function tryFetch(question, timeoutMs = 30000) {
 async function checkStatus(fromHeader = false) {
   if (fromHeader) showToast('Mengecek status...', 'info');
   try {
-    const d = await tryFetch('hi', 15000);
+    const d = await tryFetch({ sysPrompt: '', question: 'hi' }, 15000);
     isOnline = d.statusCode === 200;
     document.getElementById('splashCorsWarn')?.classList.remove('show');
   } catch(e) {
@@ -1671,9 +1737,6 @@ function skipNickname() {
 
 // ══ CHAT MANAGEMENT ══
 function newChat() {
-  // Cleanup empty chats
-  Object.keys(chats).forEach(id => { if(chats[id].messages.length===0) delete chats[id]; });
-
   const id = 'chat_' + Date.now();
   chats[id] = { title: 'Chat Baru', messages: [], history: '', starred: false, createdAt: Date.now() };
   activeChatId = id;
@@ -1761,9 +1824,6 @@ function renderChatItem(id) {
 function renderChatList() {
   const list = document.getElementById('chatList');
   let ids = Object.keys(chats).reverse();
-
-  // Filter empty chats (hide from sidebar)
-  ids = ids.filter(id => chats[id].messages.length > 0);
 
   // Apply filter
   if (chatFilter === 'starred') ids = ids.filter(id => chats[id].starred);
@@ -1916,7 +1976,7 @@ function renderMessages() {
 
 // ══ SEND ══
 // Batasi URL biar ga 502 — max 6 pesan terakhir, system prompt dicompress
-const MAX_HISTORY_TURNS = 6; // ambil N pesan terakhir (user+ai = 1 turn = 2 item)
+const MAX_HISTORY_TURNS = 20; // ambil N pesan terakhir (user+ai = 1 turn = 2 item)
 const MAX_URL_CHARS = 2800;  // batas aman URL setelah encode
 
 function buildPrompt(userMsg) {
@@ -1934,29 +1994,51 @@ function buildPrompt(userMsg) {
   const nickClause = settings.nickname
     ? ` Nama user yang kamu ajak bicara adalah ${settings.nickname}, panggil dia dengan nama itu.`
     : '';
-  const sysPrompt = mode.prompt + nickClause + styleNote;
+
+  // Cross-chat memory: ambil ringkasan dari chat lain (maks 3 chat terakhir)
+  let crossMemory = '';
+  const allChatIds = Object.keys(chats).filter(id => id !== activeChatId);
+  const recentOtherChats = allChatIds.slice(-3);
+  if (recentOtherChats.length > 0) {
+    const snippets = recentOtherChats.map(id => {
+      const ch = chats[id];
+      if (!ch || ch.messages.length === 0) return null;
+      // Ambil pesan pertama user di chat itu sebagai konteks
+      const firstUserMsg = ch.messages.find(m => m.role === 'user');
+      return firstUserMsg ? '- ' + firstUserMsg.text.slice(0, 80) : null;
+    }).filter(Boolean);
+    if (snippets.length > 0) {
+      crossMemory = ' Konteks percakapan sebelumnya dari user: ' + snippets.join('; ') + '.';
+    }
+  }
+
+  const sysPrompt = mode.prompt + nickClause + crossMemory + styleNote;
 
   // Ambil hanya N pesan terakhir dari messages array
   const chat = chats[activeChatId];
   const recentMsgs = chat.messages.slice(-MAX_HISTORY_TURNS);
   const historyStr = recentMsgs.map(m =>
-    (m.role === 'user' ? 'User: ' : 'YAREUU AI: ') + m.text.slice(0, 300) // truncate tiap pesan juga
+    (m.role === 'user' ? 'User: ' : 'YAREUU AI: ') + m.text.slice(0, 500)
   ).join('\n');
 
   const feedbackNote = chat._feedbackNote || '';
-  const fullPrompt = sysPrompt + feedbackNote + '\n\n' + historyStr + '\nUser: ' + userMsg + '\nYAREUU AI:';
 
-  // Safety check panjang URL
-  if (encodeURIComponent(fullPrompt).length > MAX_URL_CHARS * 3) {
-    // Kalau masih kegedean, pakai history lebih sedikit
-    const minMsgs = chat.messages.slice(-2);
+  // Gabung history + user msg jadi satu question string
+  // Format: [history]\nUser: [userMsg]
+  let questionStr = historyStr + (historyStr ? '\n' : '') + 'User: ' + userMsg;
+
+  // Safety: kalau terlalu panjang, potong history
+  const promptForCheck = sysPrompt + questionStr;
+  if (encodeURIComponent(promptForCheck).length > MAX_URL_CHARS * 3) {
+    const minMsgs = chat.messages.slice(-4);
     const minHistory = minMsgs.map(m =>
-      (m.role === 'user' ? 'User: ' : 'YAREUU AI: ') + m.text.slice(0, 150)
+      (m.role === 'user' ? 'User: ' : 'YAREUU AI: ') + m.text.slice(0, 200)
     ).join('\n');
-    return sysPrompt + '\n\n' + minHistory + '\nUser: ' + userMsg + '\nYAREUU AI:';
+    questionStr = minHistory + '\nUser: ' + userMsg;
   }
 
-  return fullPrompt;
+  // Return object — pisah sysPrompt dan question biar tryFetch bisa build URL dengan bener
+  return { sysPrompt: sysPrompt + feedbackNote, question: questionStr };
 }
 
 async function sendMessage(text) {
@@ -1983,39 +2065,95 @@ async function sendMessage(text) {
   chat.messages.push({ role: 'user', text: msg });
   chat.history += `\nUser: ${msg}`;
   appendMsgDOM('user', msg, false);
-  if (chat.messages.length === 1) renderChatList();
-  saveMsgToFirebase(msg, 'user'); // ← auto-save ke Firebase
 
   isWaiting = true;
   document.getElementById('sendBtn').disabled = true;
   const thinkId = settings.showThinking ? appendThinkingDOM() : null;
 
-  try {
-    const prompt = buildPrompt(msg);
-    const d = await tryFetch(prompt);
-
-    if (thinkId) removeEl(thinkId);
-
-    if (d.statusCode === 200 && d.results?.parts?.[0]?.text) {
-      const raw = d.results.parts[0].text;
-      const clean = raw.replace(/\r\n/g,'\n').replace(/\r/g,'\n').trim();
-      chat.messages.push({ role: 'ai', text: clean });
-      appendMsgDOM('ai', clean, true);
-      saveMsgToFirebase(clean, 'ai'); // ← auto-save ke Firebase
-      // Generate judul pakai AI kalau chat baru
-      if (chat._needsTitle) {
-        chat._needsTitle = false;
-        generateChatTitle(activeChatId, msg, clean);
-      }
-    } else {
-      appendMsgDOM('ai', 'Waduh, response aneh. Coba lagi dong.', true);
-    }
-  } catch(e) {
-    if (thinkId) removeEl(thinkId);
-    appendMsgDOM('ai', e.name === 'TimeoutError'
-      ? 'Timeout nih, AI-nya kelamaan. Coba lagi.'
-      : 'Gagal konek. Cek koneksi atau coba refresh.', true);
+  // Update thinking text kalau lama
+  let thinkTimer = null;
+  if (thinkId) {
+    thinkTimer = setTimeout(() => {
+      const t = document.querySelector('#' + thinkId + ' .thinking-text');
+      if (t) t.textContent = 'masih mikir...';
+    }, 12000);
+    setTimeout(() => {
+      const t = document.querySelector('#' + thinkId + ' .thinking-text');
+      if (t) t.textContent = 'bentar lagi...';
+    }, 25000);
   }
+
+  const runFetch = async (attempt = 1) => {
+    try {
+      const prompt = buildPrompt(msg);
+      const d = await tryFetch(prompt, 90000);
+      if (thinkTimer) clearTimeout(thinkTimer);
+      if (thinkId) removeEl(thinkId);
+
+      if (d.statusCode === 200 && d.results) {
+        const raw = typeof d.results === 'string' ? d.results : (typeof d.results === 'string' ? d.results : d.results?.parts?.[0]?.text) || '';
+        const clean = raw.replace(/\r\n/g,'\n').replace(/\r/g,'\n').trim().replace(/^(YAREUU AI|AI)\s*:\s*/i, '');
+        chat.messages.push({ role: 'ai', text: clean });
+        const aiMsgId = appendMsgDOM('ai', clean, true);
+        streamText(aiMsgId, clean);
+        if (chat._needsTitle) {
+          chat._needsTitle = false;
+          generateChatTitle(activeChatId, msg, clean);
+        }
+      } else if (attempt < 2) {
+        // Retry sekali kalau response aneh
+        console.warn('Bad response, retrying...');
+        workingProxy = undefined;
+        await delay(1500);
+        return runFetch(attempt + 1);
+      } else {
+        const errId = appendMsgDOM('ai', '', false);
+        document.querySelector('#'+errId+' .bubble').textContent = 'Waduh, response aneh. Coba lagi dong.';
+      }
+    } catch(e) {
+      if (thinkTimer) clearTimeout(thinkTimer);
+      if (thinkId) removeEl(thinkId);
+
+      // Retry sekali kalau timeout atau koneksi gagal
+      if (attempt < 2 && (e.name === 'TimeoutError' || e.name === 'AbortError' || e.message.includes('gagal'))) {
+        console.warn('Fetch failed, retrying...', e.message);
+        workingProxy = undefined;
+        const retryId = appendMsgDOM('ai', '', false);
+        const retryBubble = document.querySelector('#'+retryId+' .bubble');
+        if (retryBubble) retryBubble.textContent = 'Koneksi lambat, nyoba ulang...';
+        await delay(2000);
+        removeEl(retryId);
+        const thinkId2 = settings.showThinking ? appendThinkingDOM() : null;
+        try {
+          const d2 = await tryFetch(buildPrompt(msg), 90000);
+          if (thinkId2) removeEl(thinkId2);
+          if (d2.statusCode === 200 && d2.results) {
+            const raw = typeof d2.results === 'string' ? d2.results : d2.results?.parts?.[0]?.text || '';
+            const clean = raw.replace(/\r\n/g,'\n').replace(/\r/g,'\n').trim().replace(/^(YAREUU AI|AI)\s*:\s*/i, '');
+            chat.messages.push({ role: 'ai', text: clean });
+            const aiMsgId = appendMsgDOM('ai', clean, true);
+            streamText(aiMsgId, clean);
+            if (chat._needsTitle) { chat._needsTitle = false; generateChatTitle(activeChatId, msg, clean); }
+          } else {
+            const errId = appendMsgDOM('ai', '', false);
+            document.querySelector('#'+errId+' .bubble').textContent = 'Masih gagal juga. Cek koneksi atau coba lagi.';
+          }
+        } catch(e2) {
+          if (thinkId2) removeEl(thinkId2);
+          const errId = appendMsgDOM('ai', '', false);
+          document.querySelector('#'+errId+' .bubble').textContent = 'Gagal konek. Cek internet kamu.';
+        }
+        return;
+      }
+
+      const errId = appendMsgDOM('ai', '', false);
+      document.querySelector('#'+errId+' .bubble').textContent = e.name === 'TimeoutError' || e.name === 'AbortError'
+        ? 'Koneksi timeout. Coba lagi.'
+        : 'Gagal konek. Cek internet kamu.';
+    }
+  };
+
+  await runFetch();
 
   saveSettingsToStorage();
   isWaiting = false;
@@ -2038,11 +2176,12 @@ async function sendMessageInternal(msg, isRetry=false) {
     const prompt = buildPrompt(msg);
     const d = await tryFetch(prompt);
     if (thinkId) removeEl(thinkId);
-    if (d.statusCode === 200 && d.results?.parts?.[0]?.text) {
-      const raw = d.results.parts[0].text;
-      const clean = raw.replace(/\r\n/g,'\n').replace(/\r/g,'\n').trim();
+    if (d.statusCode === 200 && d.results) {
+      const raw = typeof d.results === 'string' ? d.results : (typeof d.results === 'string' ? d.results : d.results?.parts?.[0]?.text) || '';
+      const clean = raw.replace(/\r\n/g,'\n').replace(/\r/g,'\n').trim().replace(/^(YAREUU AI|AI)\s*:\s*/i, '');
       chat.messages.push({ role: 'ai', text: clean });
-      appendMsgDOM('ai', clean, true);
+      const aiMsgId2 = appendMsgDOM('ai', clean, true);
+      streamText(aiMsgId2, clean);
     } else {
       appendMsgDOM('ai', 'Waduh, response aneh. Coba lagi dong.', true);
     }
@@ -2065,8 +2204,8 @@ User: ${userMsg.slice(0, 150)}
 AI: ${aiReply.slice(0, 150)}
 
 Judul:`;
-    const d = await tryFetch(titlePrompt, 10000);
-    if (d.statusCode === 200 && d.results?.parts?.[0]?.text) {
+    const d = await tryFetch({ sysPrompt: '', question: titlePrompt }, 10000);
+    if (d.statusCode === 200 && (typeof d.results === 'string' ? d.results : d.results?.parts?.[0]?.text)) {
       let title = d.results.parts[0].text.trim()
         .replace(/^["'`]|["'`]$/g, '') // hapus tanda petik
         .replace(/\.$/, '')             // hapus titik di akhir
@@ -2124,26 +2263,23 @@ function appendMsgDOM(role, text, animate=false, msgIdx=null) {
   const bubble = document.createElement('div');
   bubble.className = 'bubble';
 
-  if (role==='ai') {
-    bubble.innerHTML = renderMarkdown(text) + (animate ? '<span class="cursor-blink"></span>' : '');
-    if (animate) setTimeout(() => { const cur=bubble.querySelector('.cursor-blink'); if(cur) cur.remove(); }, 900);
-  } else {
+  if (role === 'user') {
     bubble.textContent = text;
+  } else if (animate) {
+    // Streaming mode — mulai kosong, nanti diisi oleh streamText()
+    bubble.innerHTML = '<span class="cursor-blink"></span>';
+  } else {
+    bubble.innerHTML = renderMarkdown(text);
   }
 
   // Action row
   const actRow = document.createElement('div');
   actRow.className = 'msg-meta';
-
   const timeEl = document.createElement('span');
   timeEl.className = 'msg-time';
   timeEl.textContent = fmtTime(now);
-
   const actions = document.createElement('div');
   actions.className = 'bubble-actions';
-
-  const chat = chats[activeChatId];
-  const mIdx = msgIdx !== null ? msgIdx : (chat ? chat.messages.length - 1 : -1);
 
   if (role === 'user') {
     actions.innerHTML = `
@@ -2170,6 +2306,207 @@ function appendMsgDOM(role, text, animate=false, msgIdx=null) {
   scrollBottom();
   return id;
 }
+
+// ══ STREAMING TEXT ENGINE ══
+// Mirip Claude: teks muncul per-karakter, kode block expand dengan animasi
+async function streamText(msgId, fullText) {
+  const div = document.getElementById(msgId);
+  if (!div) return;
+  const bubble = div.querySelector('.bubble');
+  if (!bubble) return;
+
+  bubble.innerHTML = '';
+
+  // Strategi baru: render HTML dulu per-segmen, lalu stream reveal HTML-nya
+  const segments = parseSegments(fullText);
+
+  for (const seg of segments) {
+    if (seg.type === 'text') {
+      // Render markdown dulu jadi HTML, baru stream reveal-nya
+      const renderedHTML = renderText(seg.content);
+      await streamRevealHTML(bubble, renderedHTML);
+    } else if (seg.type === 'code') {
+      await streamCodeBlock(bubble, seg.lang, seg.content);
+    }
+  }
+
+  // Final: pastiin hasil akhir bersih dan bener
+  bubble.innerHTML = renderMarkdown(fullText);
+  scrollBottom();
+}
+
+function parseSegments(text) {
+  const segments = [];
+  const codeRegex = /```(\w*)\n?([\s\S]*?)```/g;
+  let lastIdx = 0, m;
+  while ((m = codeRegex.exec(text)) !== null) {
+    if (m.index > lastIdx) {
+      segments.push({ type: 'text', content: text.slice(lastIdx, m.index) });
+    }
+    segments.push({ type: 'code', lang: m[1] || 'code', content: m[2].trimEnd() });
+    lastIdx = m.index + m[0].length;
+  }
+  if (lastIdx < text.length) {
+    segments.push({ type: 'text', content: text.slice(lastIdx) });
+  }
+  return segments;
+}
+
+// Stream reveal HTML — render proper, stream per elemen/kata
+async function streamRevealHTML(bubble, html) {
+  if (!html.trim()) return;
+
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  const nodes = Array.from(tmp.childNodes);
+
+  // Cursor blink di ujung
+  const cur = document.createElement('span');
+  cur.className = 'cursor-blink';
+  bubble.appendChild(cur);
+
+  for (const node of nodes) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      // Text node biasa — stream langsung
+      const txt = node.textContent;
+      if (!txt.trim()) continue;
+      const span = document.createElement('span');
+      bubble.insertBefore(span, cur);
+      await streamChars(span, txt);
+
+    } else if (node.nodeName === 'P') {
+      // Paragraph — render langsung, animasi fade-in ringan
+      const p = document.createElement('p');
+      p.innerHTML = node.innerHTML; // langsung set, jangan stream karakter (inline code bisa kacau)
+      p.style.cssText = 'opacity:0;transition:opacity .12s ease';
+      bubble.insertBefore(p, cur);
+      await delay(8);
+      p.style.opacity = '1';
+      await delay(50);
+
+    } else if (node.nodeName === 'UL' || node.nodeName === 'OL') {
+      // List container — buat dulu, stream tiap item
+      const listEl = document.createElement(node.nodeName);
+      bubble.insertBefore(listEl, cur);
+      for (const child of Array.from(node.children)) {
+        if (child.nodeName === 'LI') {
+          const li = document.createElement('li');
+          // Set innerHTML langsung — inline code <code> harus langsung visible
+          li.innerHTML = child.innerHTML;
+          li.style.cssText = 'opacity:0;transition:opacity .1s ease';
+          listEl.appendChild(li);
+          await delay(8);
+          li.style.opacity = '1';
+          await delay(40);
+        }
+      }
+
+    } else if (/^H[123]$/.test(node.nodeName)) {
+      // Heading — muncul sekaligus dengan animasi
+      const hEl = document.createElement(node.nodeName);
+      hEl.innerHTML = node.innerHTML;
+      hEl.style.cssText = 'opacity:0;transform:translateY(4px);transition:opacity .2s,transform .2s';
+      bubble.insertBefore(hEl, cur);
+      await delay(16);
+      hEl.style.opacity = '1';
+      hEl.style.transform = 'translateY(0)';
+      await delay(80);
+
+    } else {
+      // Elemen lain (br, div, dll) — langsung insert
+      const clone = node.cloneNode(true);
+      bubble.insertBefore(clone, cur);
+      await delay(16);
+    }
+  }
+
+  cur.remove();
+}
+
+// Stream teks murni per-chunk ke dalam elemen
+async function streamChars(el, text) {
+  let i = 0;
+  while (i < text.length) {
+    el.textContent += text.slice(i, i + 4);
+    i += 4;
+    if (i % 40 === 0) scrollBottom();
+    await delay(10);
+  }
+}
+
+// Stream innerHTML yang mungkin mengandung <code>, <strong>, dll
+// Strategi: salin inner HTML langsung (udah ter-render), terus fade-in
+async function streamInnerHTML(el, innerHTML) {
+  // Set innerHTML langsung — semua inline element (<code>, <strong>, dll) langsung render
+  el.innerHTML = innerHTML;
+  await delay(30);
+}
+
+async function streamCodeBlock(bubble, lang, code) {
+  // Hapus cursor sementara
+  const existingCur = bubble.querySelector('.cursor-blink');
+  if (existingCur) existingCur.remove();
+
+  // Buat code block DOM — tampil dulu headernya
+  const block = document.createElement('div');
+  block.className = 'code-block-streaming';
+
+  const header = document.createElement('div');
+  header.className = 'code-stream-header';
+
+  const langIcon = getLangIcon(lang);
+  header.innerHTML = `
+    <span class="code-stream-lang"><i class="${langIcon}"></i> ${lang || 'code'}</span>
+    <span class="code-stream-badge">
+      <span class="stream-thinking-dots"><span></span><span></span><span></span></span>
+      <span class="code-gen-label">Generating...</span>
+    </span>`;
+
+  const pre = document.createElement('pre');
+  pre.className = 'code-stream-pre';
+  const codeEl = document.createElement('code');
+  pre.appendChild(codeEl);
+
+  block.appendChild(header);
+  block.appendChild(pre);
+  bubble.appendChild(block);
+  scrollBottom();
+
+  // Stream baris per baris — mirip claude
+  const lines = code.split('\n');
+
+  const lineDelay = Math.max(18, Math.min(60, 1200 / lines.length)); // adaptif
+  
+  for (let i = 0; i < lines.length; i++) {
+    const lineSpan = document.createElement('span');
+    lineSpan.className = 'code-line-new';
+    lineSpan.textContent = lines[i] + (i < lines.length - 1 ? '\n' : '');
+
+    codeEl.appendChild(lineSpan);
+    scrollBottom();
+    await delay(lineDelay);
+  }
+
+  // Ganti label jadi Copy button
+  const badge = header.querySelector('.code-stream-badge');
+  badge.innerHTML = `<button class="copy-btn" onclick="copyCodeEl(this)"><i class="fa-regular fa-copy"></i> Copy</button>`;
+
+  // Tambah cursor lagi setelah code block untuk teks berikutnya
+  const cur = document.createElement('span');
+  cur.className = 'cursor-blink';
+  bubble.appendChild(cur);
+  scrollBottom();
+}
+
+function copyCodeEl(btn) {
+  const code = btn.closest('.code-block-streaming, .code-block')?.querySelector('code')?.textContent || '';
+  navigator.clipboard.writeText(code).then(() => {
+    btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+    setTimeout(() => btn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy', 1800);
+  });
+}
+
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 function appendThinkingDOM() {
   const container = document.getElementById('messages');
@@ -2452,7 +2789,7 @@ function getCLISource() {
 // YAREUU AI CLI v1.0.0 — by @ilhamstecuu_
 const https=require('https'),http=require('http'),rl=require('readline'),fs=require('fs'),os=require('os'),path=require('path');
 const A={r:'\x1b[0m',b:'\x1b[1m',d:'\x1b[2m',i:'\x1b[3m',pu:'\x1b[38;2;124;106;247m',lpu:'\x1b[38;2;167;139;250m',wh:'\x1b[38;2;232;234;240m',dw:'\x1b[38;2;156;163;175m',gr:'\x1b[38;2;107;114;128m',gn:'\x1b[38;2;52;211;153m',rd:'\x1b[38;2;248;113;113m',yw:'\x1b[38;2;251;191;36m',cy:'\x1b[36m',bgUser:'\x1b[48;2;30;34;48m',bgCode:'\x1b[48;2;10;11;14m',bgCodeH:'\x1b[48;2;19;21;25m'};
-const API='https://api.zenitsu.web.id/api/ai/gemini-lite?question=',HIST=path.join(os.homedir(),'.yareuu_history.json'),SYS='Kamu adalah YAREUU AI, AI buatan @ilhamstecuu_. Kamu BUKAN Gemini/GPT/Claude. Balas Bahasa Indonesia natural.',MAX=8,VER='1.0.0';
+const API='https://api.zenitsu.web.id/api/ai/gpt?question=',HIST=path.join(os.homedir(),'.yareuu_history.json'),SYS='Kamu adalah YAREUU AI, AI buatan @ilhamstecuu_. Kamu BUKAN Gemini/GPT/Claude. Balas Bahasa Indonesia natural.',MAX=8,VER='1.0.0';
 let history=[],thinkT=null,tf=0;
 const W=()=>Math.min(process.stdout.columns||80,90),cl=()=>process.stdout.write('\r\x1b[K'),pad=n=>' '.repeat(n),hr=(ch,co,w)=>A.d+(co||A.gr)+pad(2)+ch.repeat((w||W())-4)+A.r;
 function stripA(s){return s.replace(/\x1b\[[0-9;]*m/g,'')}
@@ -2468,7 +2805,7 @@ function stopThink(){if(thinkT){clearInterval(thinkT);thinkT=null;}cl();}
 function printUser(msg){const ts=new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});console.log('');console.log(pad(2)+A.pu+A.d+'╌╌ '+A.r+A.dw+'Kamu'+A.r+A.gr+A.d+'  '+ts+A.r);const mW=Math.min(W()-10,62),words=msg.split(' ');const bLines=[];let cur='';for(const w of words){if((cur+w).length>mW){bLines.push(cur.trimEnd());cur=w+' ';}else cur+=w+' ';}if(cur.trim())bLines.push(cur.trimEnd());const bw=Math.max(...bLines.map(l=>l.length));console.log(pad(2)+A.bgUser+' '.repeat(bw+4)+A.r);for(const bl of bLines)console.log(pad(2)+A.bgUser+A.wh+'  '+bl.padEnd(bw+2)+A.r);console.log(pad(2)+A.bgUser+' '.repeat(bw+4)+A.r);console.log('');}
 function printAI(text){const ts=new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});console.log(pad(2)+A.pu+A.b+'╌╌ '+A.r+A.lpu+A.b+'YAREUU AI'+A.r+A.gr+A.d+'  '+ts+A.r);console.log('');console.log(renderAI(text));console.log('');console.log(hr('╌',A.pu));console.log('');}
 async function handleCmd(cmd){switch(cmd.trim().toLowerCase()){case'/help':console.log('');const cmds=[['/help','Tampilkan bantuan'],['/clear','Bersihkan layar'],['/reset','Hapus riwayat'],['/history','Lihat riwayat'],['/save','Simpan riwayat'],['/load','Muat riwayat'],['/exit','Keluar']];const bw=50;console.log(pad(2)+A.pu+'╭─'+A.b+A.wh+' Perintah '+A.r+A.pu+'─'.repeat(bw-10)+'╮'+A.r);for(const[c,d]of cmds){const line=A.lpu+A.b+c.padEnd(12)+A.r+A.dw+d+A.r;const vis=c.padEnd(12)+d;console.log(pad(2)+A.pu+'│ '+A.r+line+' '.repeat(Math.max(0,bw-vis.length-1))+A.pu+'│'+A.r);}console.log(pad(2)+A.pu+'╰'+'─'.repeat(bw+2)+'╯'+A.r);console.log('');break;case'/clear':history=[];banner();await checkOnline();break;case'/reset':history=[];console.log(pad(4)+A.gn+'✓'+A.r+A.dw+'  Percakapan direset.\n'+A.r);break;case'/history':if(!history.length){console.log(pad(4)+A.gr+'Riwayat kosong.\n'+A.r);break;}console.log('');history.slice(-10).forEach((m,i)=>{const role=m.role==='user'?A.lpu+'  Kamu'+A.r:A.pu+'  YAREUU AI'+A.r;console.log(role+A.gr+A.d+'  #'+(i+1)+A.r);console.log(pad(4)+A.dw+m.text.slice(0,72)+(m.text.length>72?'…':'')+A.r+'\n');});break;case'/save':try{fs.writeFileSync(HIST,JSON.stringify(history,null,2));console.log(pad(4)+A.gn+'✓'+A.r+A.dw+'  Tersimpan ke '+A.gr+HIST+A.r+'\n');}catch(e){console.log(pad(4)+A.rd+'✗ Gagal: '+e.message+A.r+'\n');}break;case'/load':try{if(!fs.existsSync(HIST)){console.log(pad(4)+A.yw+'⚠ File tidak ditemukan.\n'+A.r);break;}history=JSON.parse(fs.readFileSync(HIST,'utf8'));console.log(pad(4)+A.gn+'✓'+A.r+A.dw+'  Dimuat '+history.length+' pesan.\n'+A.r);}catch(e){console.log(pad(4)+A.rd+'✗ Gagal: '+e.message+A.r+'\n');}break;case'/exit':case'/quit':console.log('\n'+pad(2)+A.pu+A.b+'YAREUU AI'+A.r+A.gr+' — sampai jumpa! 👋'+A.r+'\n');process.exit(0);default:console.log(pad(4)+A.yw+'⚠ Perintah tidak dikenal. /help untuk bantuan.\n'+A.r);}}
-async function main(){banner();await checkOnline();const iface=rl.createInterface({input:process.stdin,output:process.stdout,terminal:true});const ask=()=>{iface.question(A.pu+A.b+'  ❯ '+A.r,async input=>{const msg=input.trim();if(!msg){ask();return;}if(msg.startsWith('/')){await handleCmd(msg);ask();return;}printUser(msg);history.push({role:'user',text:msg});startThink();try{const d=await apiCall(buildPrompt(msg));stopThink();if(d.statusCode===200&&d.results?.parts?.[0]?.text){const raw=d.results.parts[0].text,clean=raw.replace(/\r\n/g,'\n').trim();history.push({role:'ai',text:clean});printAI(clean);}else console.log(pad(4)+A.rd+'✗ Response tidak valid. Coba lagi.\n'+A.r);}catch(e){stopThink();console.log(pad(4)+A.rd+'✗ '+(e.message==='Timeout'?'AI-nya kelamaan, coba lagi.':'Koneksi gagal: '+e.message)+'\n'+A.r);}ask();});};iface.on('close',()=>{console.log('\n'+pad(2)+A.gr+'YAREUU AI CLI ditutup.'+A.r+'\n');process.exit(0);});ask();}
+async function main(){banner();await checkOnline();const iface=rl.createInterface({input:process.stdin,output:process.stdout,terminal:true});const ask=()=>{iface.question(A.pu+A.b+'  ❯ '+A.r,async input=>{const msg=input.trim();if(!msg){ask();return;}if(msg.startsWith('/')){await handleCmd(msg);ask();return;}printUser(msg);history.push({role:'user',text:msg});startThink();try{const d=await apiCall(buildPrompt(msg));stopThink();if(d.statusCode===200&&(typeof d.results === 'string' ? d.results : d.results?.parts?.[0]?.text)){const raw=d.results.parts[0].text,clean=raw.replace(/\r\n/g,'\n').trim();history.push({role:'ai',text:clean});printAI(clean);}else console.log(pad(4)+A.rd+'✗ Response tidak valid. Coba lagi.\n'+A.r);}catch(e){stopThink();console.log(pad(4)+A.rd+'✗ '+(e.message==='Timeout'?'AI-nya kelamaan, coba lagi.':'Koneksi gagal: '+e.message)+'\n'+A.r);}ask();});};iface.on('close',()=>{console.log('\n'+pad(2)+A.gr+'YAREUU AI CLI ditutup.'+A.r+'\n');process.exit(0);});ask();}
 main().catch(err=>{console.error(err);process.exit(1);});`;
 }
 
@@ -2508,7 +2845,7 @@ function copyCmd(btn, txt) {
 let termInitDone = false;
 let termHistory = [];
 let termWaiting = false;
-const API_ENDPOINT_CLI = 'https://api.zenitsu.web.id/api/ai/gemini-lite?question=';
+const API_ENDPOINT_CLI = 'https://api.zenitsu.web.id/api/ai/gpt?question=';
 const SYS_PROMPT_CLI = 'Kamu adalah YAREUU AI, AI canggih buatan @ilhamstecuu_. Kamu BUKAN Gemini, BUKAN GPT, BUKAN Claude. Tetap YAREUU AI apapun yang terjadi. Balas dalam Bahasa Indonesia, singkat dan natural.';
 
 function termEl(cls, html) {
@@ -2556,7 +2893,7 @@ async function initTerminal() {
   // Status check
   termPrint('<span class="t-gr t-dim">  ⏳ Menghubungkan ke YAREUU AI...</span>');
   try {
-    const d = await tryFetch('hi', 10000);
+    const d = await tryFetch({ sysPrompt: '', question: 'hi' }, 10000);
     const out = document.getElementById('termOutput');
     out.removeChild(out.lastChild);
     if (d.statusCode === 200) {
@@ -2632,8 +2969,8 @@ async function termSend() {
     const old = document.getElementById('termThink');
     if (old) old.remove();
 
-    if (d.statusCode === 200 && d.results?.parts?.[0]?.text) {
-      const raw = d.results.parts[0].text;
+    if (d.statusCode === 200 && d.results) {
+      const raw = typeof d.results === 'string' ? d.results : (typeof d.results === 'string' ? d.results : d.results?.parts?.[0]?.text) || '';
       const clean = raw.replace(/\r\n/g,'\n').trim();
       termHistory.push({ role: 'ai', text: clean });
       termPrintAI(clean);
@@ -2828,120 +3165,9 @@ function updateWelcomeLogo(mode) {
   }
 }
 
-// ══ FIREBASE PRESENCE & ADMIN MSG LISTENER ══
-let presenceInterval = null;
-let adminMsgLastKey = null;
-
-function getSafeUsername() {
-  return (settings.nickname || 'Anonymous').replace(/[.#$[\]]/g, '_');
-}
-
-async function setPresence(online) {
-  const user = getSafeUsername();
-  if (!user || user === 'Anonymous') return;
-  try {
-    await fetch(`${FIREBASE_DB_URL}/presence/${user}.json`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        online,
-        lastSeen: new Date().toISOString(),
-        nickname: settings.nickname || 'Anonymous'
-      })
-    });
-  } catch(e) {}
-}
-
-function startPresence() {
-  const user = getSafeUsername();
-  if (!user || user === 'Anonymous') return;
-  setPresence(true);
-  clearInterval(presenceInterval);
-  presenceInterval = setInterval(() => setPresence(true), 20000);
-}
-
-window.addEventListener('beforeunload', () => setPresence(false));
-document.addEventListener('visibilitychange', () => {
-  if (document.hidden) setPresence(false);
-  else setPresence(true);
-});
-
-async function pollAdminMessages() {
-  const user = getSafeUsername();
-  if (!user || user === 'Anonymous') return;
-  try {
-    const res = await fetch(`${FIREBASE_DB_URL}/admin_msgs/${user}.json`);
-    if (!res.ok) return;
-    const data = await res.json();
-    if (!data) return;
-
-    const keys = Object.keys(data).sort();
-    for (const key of keys) {
-      if (adminMsgLastKey && key <= adminMsgLastKey) continue;
-      const msg = data[key];
-      if (!msg || msg.shown) continue;
-
-      showAdminMessage(msg.chat, msg.date);
-
-      await fetch(`${FIREBASE_DB_URL}/admin_msgs/${user}/${key}/shown.json`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(true)
-      });
-
-      adminMsgLastKey = key;
-    }
-  } catch(e) {}
-}
-
-function showAdminMessage(text, date) {
-  showToast('\u{1F4E9} Pesan dari ADMIN masuk!', 'info');
-
-  const container = document.getElementById('messages');
-  const welcome = document.getElementById('welcomeMsg');
-  if (welcome) welcome.remove();
-
-  const id = 'msg-admin-' + Date.now();
-  const div = document.createElement('div');
-  div.className = 'msg ai'; div.id = id;
-  div.innerHTML = `
-    <div class="avatar" style="background:linear-gradient(135deg,#f97316,#fbbf24);color:white;flex-shrink:0;align-self:flex-start;margin-top:2px;width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:13px;">
-      <i class="fa-solid fa-shield-halved"></i>
-    </div>
-    <div class="msg-wrapper">
-      <div class="bubble2" style="background:rgba(249,115,22,0.08);border-color:rgba(249,115,22,0.4);border-left:3px solid #f97316;border-radius:4px 14px 14px 14px;">
-        <div style="color:var(--text);line-height:1.72;">${escHtml(text).replace(/\n/g,'<br>')}</div>
-      </div>
-      <div class="msg-meta">
-        <span class="msg-time">${date || getFormattedDate()}</span>
-      </div>
-    </div>`;
-  container.appendChild(div);
-  scrollBottom();
-}
-
-let adminPollInterval = null;
-
-function startAdminPolling() {
-  clearInterval(adminPollInterval);
-  adminPollInterval = setInterval(pollAdminMessages, 5000);
-  pollAdminMessages();
-}
-
-// Restart presence & polling setelah nickname di-set
-const _origConfirmNickname = confirmNickname;
-confirmNickname = function() {
-  _origConfirmNickname();
-  setTimeout(() => { startPresence(); startAdminPolling(); }, 300);
-};
-
 // ══ INIT ══
 loadSettings();
 checkStatus();
-setTimeout(() => {
-  startPresence();
-  startAdminPolling();
-}, 1200);
 </script>
 </body>
 </html>
